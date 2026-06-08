@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Sprint Project Planner</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"/>
+  <link href="style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<!-- ========== NAVBAR ========== -->
+<nav class="navbar navbar-expand-lg navbar-dark spp-navbar">
+  <div class="container-fluid px-4">
+    <a class="navbar-brand fw-bold" href="#" onclick="showDashboard()">
+      <i class="fas fa-project-diagram me-2"></i>Sprint Project Planner
+    </a>
+    <div class="ms-auto d-flex align-items-center gap-2">
+      <button class="btn btn-outline-light btn-sm" onclick="showDashboard()" title="Dashboard">
+        <i class="fas fa-th-large me-1"></i>Dashboard
+      </button>
+      <button class="btn btn-light btn-sm fw-semibold" onclick="createNewProject()">
+        <i class="fas fa-plus me-1"></i>New Project
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ========== DASHBOARD ========== -->
+<section id="dashboard" class="container-fluid px-4 py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3 class="fw-bold text-dark mb-1"><i class="fas fa-folder-open me-2 text-primary"></i>My Projects</h3>
+      <p class="text-muted mb-0 small">Manage your sprint project plans</p>
+    </div>
+    <div class="d-flex gap-2">
+      <button class="btn btn-outline-primary" onclick="triggerImportJSON()">
+        <i class="fas fa-file-import me-1"></i>Import JSON
+      </button>
+      <button class="btn btn-primary" onclick="createNewProject()">
+        <i class="fas fa-plus me-1"></i>Create Project
+      </button>
+    </div>
+  </div>
+  <div id="projectCards" class="row g-3"></div>
+  <div id="emptyState" class="text-center py-5 d-none">
+    <i class="fas fa-clipboard-list fa-4x text-muted mb-3"></i>
+    <h5 class="text-muted">No projects yet</h5>
+    <p class="text-muted">Click <strong>Create Project</strong> to get started, or <strong>Import JSON</strong> to load an existing plan.</p>
+    <div class="d-flex gap-2 justify-content-center">
+      <button class="btn btn-outline-primary" onclick="triggerImportJSON()">
+        <i class="fas fa-file-import me-1"></i>Import JSON
+      </button>
+      <button class="btn btn-primary" onclick="createNewProject()">
+        <i class="fas fa-plus me-1"></i>Create Your First Project
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ========== EDITOR ========== -->
+<section id="editor" class="container-fluid px-4 py-4 d-none">
+
+  <!-- Editor Header -->
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-outline-secondary btn-sm" onclick="showDashboard()">
+        <i class="fas fa-arrow-left me-1"></i>Back
+      </button>
+      <h4 id="editorTitle" class="fw-bold mb-0 text-dark">New Project</h4>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <button class="btn btn-success btn-sm" onclick="saveProject()">
+        <i class="fas fa-save me-1"></i>Save Project
+      </button>
+      <button class="btn btn-outline-primary btn-sm" onclick="triggerImportJSON()" title="Import JSON">
+        <i class="fas fa-file-import me-1"></i>Import JSON
+      </button>
+      <button class="btn btn-outline-secondary btn-sm" onclick="exportJSON()" title="Export JSON">
+        <i class="fas fa-download me-1"></i>Export JSON
+      </button>
+    </div>
+  </div>
+
+  <!-- Config Panel -->
+  <div class="card spp-card mb-4">
+    <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center"
+         style="cursor:pointer" onclick="toggleCollapse('configBody','configChev')">
+      <h6 class="mb-0 fw-semibold"><i class="fas fa-cog me-2 text-primary"></i>Project Configuration</h6>
+      <i id="configChev" class="fas fa-chevron-up text-muted"></i>
+    </div>
+    <div id="configBody" class="card-body">
+      <div class="row g-3">
+        <div class="col-md-3">
+          <label class="form-label fw-semibold small">Project Name</label>
+          <input type="text" id="projectName" class="form-control" placeholder="e.g. Marketing Campaign"/>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-semibold small">Number of Sprints</label>
+          <input type="number" id="numSprints" class="form-control" min="1" max="50" value="3"/>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-semibold small">Weeks per Sprint</label>
+          <input type="number" id="weeksPerSprint" class="form-control" min="1" max="12" value="2"/>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold small">Project Start Date (Monday)</label>
+          <input type="date" id="startDate" class="form-control"/>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <button class="btn btn-primary w-100" onclick="applyConfig()">
+            <i class="fas fa-sync-alt me-1"></i>Apply
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TABS ===== -->
+  <ul class="nav nav-tabs spp-tabs mb-0" id="mainTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="tab-items" data-bs-toggle="tab" data-bs-target="#pane-items"
+              type="button" role="tab">
+        <i class="fas fa-list-check me-1"></i>Action Items
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="tab-plan" data-bs-toggle="tab" data-bs-target="#pane-plan"
+              type="button" role="tab" onclick="setTimeout(renderPlan,50)">
+        <i class="fas fa-chart-gantt me-1"></i>Project Plan
+      </button>
+    </li>
+  </ul>
+
+  <div class="tab-content">
+
+    <!-- ── Action Items Pane ── -->
+    <div class="tab-pane fade show active" id="pane-items" role="tabpanel">
+      <div class="card spp-card border-top-0" style="border-radius:0 0 12px 12px;">
+        <div class="card-body p-0">
+          <div class="d-flex justify-content-between align-items-center px-3 py-2 bg-light border-bottom">
+            <span class="text-muted small fw-semibold"><i class="fas fa-tasks me-1"></i>Define your sprint action items — drag <i class="fas fa-grip-vertical"></i> to reorder</span>
+            <button class="btn btn-success btn-sm" onclick="addActionItem()">
+              <i class="fas fa-plus me-1"></i>Add Item
+            </button>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle spp-items-table">
+              <thead class="table-light">
+                <tr>
+                  <th style="width:52px">#</th>
+                  <th>Action Item</th>
+                  <th style="width:150px">Start Week</th>
+                  <th style="width:150px">End Week</th>
+                  <th style="width:75px">Color</th>
+                  <th style="width:110px">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="actionItemsBody"></tbody>
+            </table>
+          </div>
+          <div id="noItemsMsg" class="text-center text-muted py-4 d-none">
+            <i class="fas fa-inbox fa-2x mb-2"></i>
+            <p class="mb-0">No action items yet. Click <strong>Add Item</strong> to begin.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Plan View Pane ── -->
+    <div class="tab-pane fade" id="pane-plan" role="tabpanel">
+      <div class="card spp-card border-top-0" style="border-radius:0 0 12px 12px;">
+        <!-- view toggle bar -->
+        <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <span class="text-muted small fw-semibold"><i class="fas fa-eye me-1"></i>Choose a view</span>
+          <div class="d-flex gap-2 flex-wrap">
+            <div class="btn-group spp-view-toggle" role="group">
+              <button class="btn btn-sm btn-primary active" data-view="grid" onclick="switchView('grid',this)">
+                <i class="fas fa-table-cells me-1"></i>Grid
+              </button>
+              <button class="btn btn-sm btn-outline-primary" data-view="gantt" onclick="switchView('gantt',this)">
+                <i class="fas fa-bars-staggered me-1"></i>Gantt
+              </button>
+              <button class="btn btn-sm btn-outline-primary" data-view="swimlane" onclick="switchView('swimlane',this)">
+                <i class="fas fa-water me-1"></i>Swimlane
+              </button>
+              <button class="btn btn-sm btn-outline-primary" data-view="timeline" onclick="switchView('timeline',this)">
+                <i class="fas fa-timeline me-1"></i>Timeline
+              </button>
+            </div>
+            <button class="btn btn-outline-info btn-sm" onclick="exportImage()">
+              <i class="fas fa-image me-1"></i>Export PNG
+            </button>
+          </div>
+        </div>
+        <div class="card-body p-0 overflow-auto" style="max-height:75vh;">
+          <div id="planView" class="p-3"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-content -->
+</section>
+
+<!-- Hidden file input for JSON import -->
+<input type="file" id="jsonFileInput" accept=".json,application/json" style="display:none"/>
+
+<!-- ========== TOAST ========== -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index:1100">
+  <div id="appToast" class="toast align-items-center text-bg-success border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastBody">Saved!</div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+  <div class="modal-dialog modal-sm modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-danger text-white">
+        <h6 class="modal-title"><i class="fas fa-trash me-1"></i>Delete Project</h6>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">Are you sure you want to delete this project? This cannot be undone.</div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger btn-sm" id="confirmDeleteBtn">Delete</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
