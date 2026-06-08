@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JSON Schema Generation &amp; Validation Tool</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="page-header">
+      <div>
+        <h1>JSON Schema Generation &amp; Validation Tool</h1>
+        <p class="subtitle">Use the left side for JSON input and the right side for schema output/input. Generate schema from JSON, then validate the JSON against the schema locally in your browser.</p>
+      </div>
+      <div class="header-actions">
+        <button id="generateSchemaBtn" class="btn btn-primary">Generate Schema</button>
+        <button id="validateBtn" class="btn btn-success">Validate JSON</button>
+        <button id="beautifyBothBtn" class="btn">Beautify Both</button>
+        <button id="clearBtn" class="btn btn-danger">Clear</button>
+      </div>
+    </header>
+
+    <div id="globalStatus" class="global-status hidden" aria-live="polite"></div>
+
+    <nav class="tab-bar" aria-label="Main views">
+      <button id="inputsTab" class="tab-btn active" type="button">Inputs</button>
+      <button id="resultsTab" class="tab-btn" type="button">Validation Results</button>
+    </nav>
+
+    <section id="inputsSection" class="view-section">
+      <section class="editor-grid">
+        <article class="editor-card">
+          <div class="card-header">
+            <div>
+              <h2>JSON Input</h2>
+              <div class="status-row">
+                <span id="leftValidityBadge" class="badge badge-neutral">Waiting for input</span>
+                <span id="leftMeta" class="meta"></span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <label class="file-label">
+                Load JSON
+                <input type="file" id="leftFile" accept=".json,application/json,text/plain" hidden />
+              </label>
+              <button id="leftBeautifyBtn" class="btn btn-small">Beautify</button>
+            </div>
+          </div>
+          <textarea id="leftInput" class="json-input" spellcheck="false" placeholder='Paste JSON here...'></textarea>
+          <div class="validation-panel">
+            <span class="validation-title">Validation</span>
+            <pre id="leftValidationMsg">No JSON entered yet.</pre>
+          </div>
+        </article>
+
+        <article class="editor-card">
+          <div class="card-header">
+            <div>
+              <h2>Schema</h2>
+              <div class="status-row">
+                <span id="rightValidityBadge" class="badge badge-neutral">Waiting for input</span>
+                <span id="rightMeta" class="meta"></span>
+              </div>
+            </div>
+            <div class="card-actions">
+              <label class="file-label">
+                Load Schema
+                <input type="file" id="rightFile" accept=".json,application/json,text/plain" hidden />
+              </label>
+              <button id="rightBeautifyBtn" class="btn btn-small">Beautify</button>
+            </div>
+          </div>
+          <textarea id="rightInput" class="json-input" spellcheck="false" placeholder='Generated schema will appear here, or paste JSON Schema here for validation...'></textarea>
+          <div class="validation-panel">
+            <span class="validation-title">Validation</span>
+            <pre id="rightValidationMsg">No schema entered yet.</pre>
+          </div>
+        </article>
+      </section>
+    </section>
+
+    <section id="resultsSection" class="view-section hidden">
+      <section id="resultsContent" class="results-layout hidden">
+        <article class="result-card">
+          <div class="card-header">
+            <h2>Schema Validation Summary</h2>
+          </div>
+          <div class="summary-content">
+            <div id="validationSummary" class="summary-box summary-neutral">Run validation to see results.</div>
+            <div class="error-list-wrap">
+              <h3>Validation Errors</h3>
+              <div id="errorList" class="error-list empty-state">No validation run yet.</div>
+            </div>
+          </div>
+        </article>
+
+        <article class="result-card">
+          <div class="card-header">
+            <h2>JSON Preview with Invalid Parts Highlighted</h2>
+          </div>
+          <div id="jsonPreview" class="preview-content empty-state">Run validation to highlight invalid parts in light red.</div>
+        </article>
+      </section>
+
+      <section id="resultsEmptyState" class="result-card result-empty-state">
+        <div class="card-header">
+          <h2>Validation Results</h2>
+        </div>
+        <div class="empty-panel">Run <strong>Validate JSON</strong> with valid JSON input and schema to see the validation summary and highlighted preview.</div>
+      </section>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
