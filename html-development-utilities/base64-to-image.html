@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base64 Image Studio</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --secondary: #28a745;
+            --bg: #f4f7f6;
+            --text-muted: #666;
+        }
+        body {
+            font-family: -apple-system, system-ui, sans-serif;
+            background-color: var(--bg);
+            display: flex;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+        .container {
+            background: white;
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #eee;
+            margin-bottom: 25px;
+        }
+        .tab-btn {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-muted);
+            transition: 0.3s;
+        }
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: monospace;
+            box-sizing: border-box;
+            resize: vertical;
+        }
+        .action-bar { margin: 20px 0; display: flex; gap: 10px; }
+        button {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-success { background: var(--secondary); color: white; }
+        button:hover { opacity: 0.9; }
+
+        .preview-box {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            min-height: 100px;
+            background: #fafafa;
+            position: relative;
+        }
+        img { max-width: 100%; border-radius: 4px; }
+        
+        .info-panel {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fdfdfd;
+            border-top: 1px solid #eee;
+            font-size: 14px;
+            color: #333;
+            display: none;
+        }
+        .info-panel b { color: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="openTab(event, 'toImage')">Base64 to Image</button>
+        <button class="tab-btn" onclick="openTab(event, 'toBase64')">Image to Base64</button>
+    </div>
+
+    <!-- Tab 1: Base64 to Image -->
+    <div id="toImage" class="tab-content active">
+        <textarea id="b64Input" placeholder="Paste Base64 string here..."></textarea>
+        <div class="action-bar">
+            <button class="btn-primary" onclick="convertToImg()">Render Preview</button>
+            <button id="dlBtn" class="btn-success" style="display:none;" onclick="downloadImg()">Download File</button>
+        </div>
+        <div class="preview-box">
+            <p id="imgPlaceholder">Image preview will appear here</p>
+            <img id="imgRender" style="display:none;">
+        </div>
+        <div id="infoToImg" class="info-panel">
+            Image Size: <b id="dimToImg">0 x 0</b>
+        </div>
+    </div>
+
+    <!-- Tab 2: Image to Base64 -->
+    <div id="toBase64" class="tab-content">
+        <div class="preview-box" style="margin-bottom: 20px;">
+            <input type="file" id="fileInput" accept="image/*" onchange="convertToBase64()">
+            <p style="font-size: 12px; color: #888;">Select an image to generate string</p>
+        </div>
+        <textarea id="b64Output" readonly placeholder="Base64 string result..."></textarea>
+        <div class="action-bar">
+            <button class="btn-primary" onclick="copyToClipboard()">Copy to Clipboard</button>
+            <button class="btn-success" onclick="clearAll()">Clear</button>
+        </div>
+        <div id="infoToBase" class="info-panel">
+            Original Image Size: <b id="dimToBase">0 x 0</b>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openTab(evt, tabName) {
+        let contents = document.getElementsByClassName("tab-content");
+        for (let i = 0; i < contents.length; i++) contents[i].className = "tab-content";
+        let btns = document.getElementsByClassName("tab-btn");
+        for (let i = 0; i < btns.length; i++) btns[i].className = "tab-btn";
+        document.getElementById(tabName).className = "tab-content active";
+        evt.currentTarget.className = "tab-btn active";
+    }
+
+    // BASE64 TO IMAGE
+    function convertToImg() {
+        const input = document.getElementById('b64Input').value.trim();
+        const img = document.getElementById('imgRender');
+        const placeholder = document.getElementById('imgPlaceholder');
+        const dlBtn = document.getElementById('dlBtn');
+        const info = document.getElementById('infoToImg');
+        const dimDisplay = document.getElementById('dimToImg');
+
+        if (!input) return;
+
+        let src = input.startsWith('data:image/') ? input : `data:image/png;base64,${input}`;
+        img.src = src;
+        
+        img.onload = () => {
+            img.style.display = 'block';
+            placeholder.style.display = 'none';
+            dlBtn.style.display = 'inline-block';
+            info.style.display = 'block';
+            dimDisplay.innerText = `${img.naturalWidth}px (W) × ${img.naturalHeight}px (H)`;
+        };
+
+        img.onerror = () => {
+            alert("Invalid Base64 format.");
+            img.style.display = 'none';
+            dlBtn.style.display = 'none';
+            info.style.display = 'none';
+            placeholder.style.display = 'block';
+        };
+    }
+
+    function downloadImg() {
+        const img = document.getElementById('imgRender');
+        const link = document.createElement('a');
+        link.href = img.src;
+        link.download = 'decoded-image';
+        link.click();
+    }
+
+    // IMAGE TO BASE64
+    function convertToBase64() {
+        const file = document.getElementById('fileInput').files[0];
+        const output = document.getElementById('b64Output');
+        const info = document.getElementById('infoToBase');
+        const dimDisplay = document.getElementById('dimToBase');
+        
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onloadend = function() {
+            output.value = reader.result;
+            
+            // Create temporary image to get dimensions
+            const tempImg = new Image();
+            tempImg.src = reader.result;
+            tempImg.onload = function() {
+                info.style.display = 'block';
+                dimDisplay.innerText = `${this.width}px (W) × ${this.height}px (H)`;
+            };
+        }
+        reader.readAsDataURL(file);
+    }
+
+    function copyToClipboard() {
+        const output = document.getElementById('b64Output');
+        output.select();
+        document.execCommand('copy');
+        alert("Copied to clipboard!");
+    }
+
+    function clearAll() {
+        document.getElementById('fileInput').value = "";
+        document.getElementById('b64Output').value = "";
+        document.getElementById('infoToBase').style.display = 'none';
+    }
+</script>
+
+</body>
+</html>
