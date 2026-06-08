@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL Encoder/Decoder</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            max-width: 700px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f9f9fb;
+        }
+        h2 { color: #333; }
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+        }
+        .button-group {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            flex: 1;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            border-radius: 6px;
+            transition: opacity 0.2s;
+        }
+        .encode { background-color: #4a90e2; color: white; }
+        .decode { background-color: #50b3a2; color: white; }
+        .clear { background-color: #e0e0e0; color: #333; flex: 0.5; }
+        button:hover { opacity: 0.85; }
+        button:active { transform: translateY(1px); }
+        .hint {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>URL Encoder / Decoder</h2>
+    
+    <textarea id="ioField" placeholder="Paste your URL or text here..."></textarea>
+
+    <div class="button-group">
+        <button class="encode" onclick="process('encode')">Encode</button>
+        <button class="decode" onclick="process('decode')">Decode</button>
+        <button class="clear" onclick="clearField()">Clear</button>
+    </div>
+
+    <p class="hint">Note: This happens locally in your browser. No data is sent to a server.</p>
+
+    <script>
+        const field = document.getElementById('ioField');
+
+        function process(type) {
+            const value = field.value;
+            if (!value) return;
+
+            try {
+                if (type === 'encode') {
+                    // encodeURIComponent handles special characters like ?, &, =, etc.
+                    field.value = encodeURIComponent(value);
+                } else {
+                    // decodeURIComponent reverses the process
+                    field.value = decodeURIComponent(value.replace(/\+/g,  " "));
+                }
+            } catch (e) {
+                alert("Error: The input string is not a valid URL format for this operation.");
+            }
+        }
+
+        function clearField() {
+            field.value = '';
+            field.focus();
+        }
+    </script>
+</body>
+</html>
