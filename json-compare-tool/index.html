@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Local JSON Compare Tool</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="page-header">
+      <div>
+        <h1>Local JSON Compare Tool</h1>
+        <p class="subtitle">Paste or load two JSON documents, validate them instantly, beautify, and compare them side by side &mdash; all locally in the browser.</p>
+      </div>
+      <div class="header-actions">
+        <button id="compareBtn" class="btn btn-primary">Compare</button>
+        <button id="backBtn" class="btn hidden">Back to Editors</button>
+        <button id="beautifyBtn" class="btn">Beautify Both</button>
+        <button id="minifyBtn" class="btn">Minify Both</button>
+        <button id="clearBtn" class="btn btn-danger">Clear</button>
+      </div>
+    </header>
+
+    <div id="globalStatus" class="global-status hidden" aria-live="polite"></div>
+
+    <section id="editorSection" class="editor-grid">
+      <article class="editor-card">
+        <div class="card-header">
+          <div>
+            <h2>File 1 / JSON 1</h2>
+            <div class="status-row">
+              <span id="leftValidityBadge" class="badge badge-neutral">Waiting for input</span>
+              <span id="leftMeta" class="meta"></span>
+            </div>
+          </div>
+          <div class="card-actions">
+            <label class="file-label">
+              Load File
+              <input type="file" id="leftFile" accept=".json,application/json,text/plain" hidden />
+            </label>
+            <button id="leftBeautifyBtn" class="btn btn-small">Beautify</button>
+            <button id="leftMinifyBtn" class="btn btn-small">Minify</button>
+          </div>
+        </div>
+        <textarea id="leftInput" class="json-input" spellcheck="false" placeholder='Paste JSON for File 1 here...'></textarea>
+        <div class="validation-panel">
+          <span class="validation-title">Validation</span>
+          <pre id="leftValidationMsg">No JSON entered yet.</pre>
+        </div>
+      </article>
+
+      <article class="editor-card">
+        <div class="card-header">
+          <div>
+            <h2>File 2 / JSON 2</h2>
+            <div class="status-row">
+              <span id="rightValidityBadge" class="badge badge-neutral">Waiting for input</span>
+              <span id="rightMeta" class="meta"></span>
+            </div>
+          </div>
+          <div class="card-actions">
+            <label class="file-label">
+              Load File
+              <input type="file" id="rightFile" accept=".json,application/json,text/plain" hidden />
+            </label>
+            <button id="rightBeautifyBtn" class="btn btn-small">Beautify</button>
+            <button id="rightMinifyBtn" class="btn btn-small">Minify</button>
+          </div>
+        </div>
+        <textarea id="rightInput" class="json-input" spellcheck="false" placeholder='Paste JSON for File 2 here...'></textarea>
+        <div class="validation-panel">
+          <span class="validation-title">Validation</span>
+          <pre id="rightValidationMsg">No JSON entered yet.</pre>
+        </div>
+      </article>
+    </section>
+
+    <section id="resultSection" class="result-section hidden">
+      <section class="summary-strip">
+        <div class="summary-item"><span class="dot same"></span> Unchanged</div>
+        <div class="summary-item"><span class="dot added"></span> Added</div>
+        <div class="summary-item"><span class="dot removed"></span> Removed</div>
+        <div class="summary-item"><span class="dot changed"></span> Changed</div>
+        <div class="summary-item"><strong id="diffSummary">No comparison run yet.</strong></div>
+      </section>
+
+      <section class="result-grid">
+        <article class="result-card">
+          <div class="card-header sticky-header">
+            <h2>Comparison View - File 1</h2>
+          </div>
+          <div id="leftDiff" class="diff-content empty-state">Run a comparison to see File 1 differences.</div>
+        </article>
+
+        <article class="result-card">
+          <div class="card-header sticky-header">
+            <h2>Comparison View - File 2</h2>
+          </div>
+          <div id="rightDiff" class="diff-content empty-state">Run a comparison to see File 2 differences.</div>
+        </article>
+      </section>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
