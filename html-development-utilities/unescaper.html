@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>String Unescaper</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 0 20px;
+            background-color: #fafafa;
+            color: #333;
+        }
+        h2 { color: #111; }
+        .box {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 160px;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            resize: vertical;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-decode { background-color: #0066cc; color: white; }
+        .btn-decode:hover { background-color: #0052a3; }
+        .btn-clear { background-color: #e0e0e0; color: #333; }
+        .btn-clear:hover { background-color: #d0d0d0; }
+        label { font-weight: bold; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <h2>String Unescaper</h2>
+    
+    <div class="box">
+        <div>
+            <label for="input">Escaped Input String:</label>
+            <textarea id="input" placeholder="Paste your string here (e.g. text \n{\n \&quot;file_name\&quot; ...)"></textarea>
+        </div>
+
+        <div class="buttons">
+            <button class="btn-decode" onclick="manualUnescape()">Unescape</button>
+            <button class="btn-clear" onclick="clearAll()">Clear</button>
+        </div>
+
+        <div>
+            <label for="output">Unescaped Output:</label>
+            <textarea id="output" readonly placeholder="Output will appear here..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        function manualUnescape() {
+            let str = document.getElementById('input').value;
+            
+            // Explicitly handling every standard backslash escape manually via regex
+            let result = str
+                .replace(/\\n/g, '\n')  // Newlines
+                .replace(/\\t/g, '\t')  // Tabs
+                .replace(/\\"/g, '"')   // Double quotes
+                .replace(/\\'/g, "'")   // Single quotes
+                .replace(/\\r/g, '\r')  // Carriage returns
+                .replace(/\\b/g, '\b')  // Backspaces
+                .replace(/\\f/g, '\f')  // Form feeds
+                .replace(/\\\\/g, '\\'); // Literal backslashes
+
+            document.getElementById('output').value = result;
+        }
+
+        function clearAll() {
+            document.getElementById('input').value = '';
+            document.getElementById('output').value = '';
+        }
+    </script>
+
+</body>
+</html>
