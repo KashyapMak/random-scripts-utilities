@@ -1,6 +1,6 @@
-# 🎥 YouTube & Video Practice Question Extractor
+# 🎥 YouTube & Video Frame Extractor
 
-An automated Python utility designed to extract practice questions from YouTube videos or local video files. It detects unique question frames, eliminates duplicate frames using visual or text-based comparison algorithms, performs OCR, and exports results into custom formats (Text, PDF, and Image Frames).
+An automated Python utility designed to extract frames from YouTube videos or local video files. It detects unique frames, eliminates duplicate frames using visual or text-based comparison algorithms, performs OCR, and exports results into custom formats (Text, PDF, and Image Frames).
 
 ---
 
@@ -11,7 +11,7 @@ An automated Python utility designed to extract practice questions from YouTube 
   * **Visual Frame Comparison (Fast):** Compares pixel difference across frames using OpenCV to skip redundant OCR processing.
   * **Text Similarity Comparison (Accurate):** Uses EasyOCR combined with TF-IDF cosine text similarity to detect duplicate text across moving/animated backgrounds.
 * **Flexible Export Options:**
-  * Clean Text File (`.txt`) with question index and timestamps.
+  * Clean Text File (`.txt`) with index and timestamps.
   * Compiled PDF document (`.pdf`) containing full slide screenshots.
   * Individual image frames folder (`.jpg`).
 * **Custom Output Directory:** Specify any local export directory for generated outputs.
@@ -39,7 +39,7 @@ Note for CPU Users: EasyOCR uses PyTorch. If you do not have an NVIDIA CUDA-capa
 - Run the Python script:
 
 ```bash
-python question_extractor.py
+python frame-extract.py
 ```
 
 ## 📋 Interactive Prompts
@@ -77,7 +77,7 @@ D:/StudyOutput/
 ```
 
 ## ⚙️ Advanced Settings (Optional Configuration)
-- You can tweak parameters directly inside extract_questions() in the script:
+- You can tweak parameters directly inside extract_frames() in the script:
 - Sampling Rate (sample_interval_sec): Default is set to 2 seconds. Increase for longer videos to speed up processing.
 - Text Similarity Threshold: Default is set to 0.75 (75%). Lower this value if questions are very similar to each other.
 - Visual Frame Difference Threshold: Default is set to 5.0%. Increase if video background has minor animated particles or small timer badges.
