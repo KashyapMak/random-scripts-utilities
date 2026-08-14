@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>India In-Hand Salary Calculator</title>
+  <style>
+    :root {
+      --brand-red: #7c1c2b;
+      --brand-red-dark: #621421;
+      --brand-red-light: #9e2a3c;
+      --text-dark: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --bg-page: #ffffff;
+      --accent-blue: #1d4ed8;
+      --success-green: #059669;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+    body { background: var(--bg-page); color: var(--text-dark); padding: 24px 16px; line-height: 1.5; }
+    .container { max-width: 950px; margin: 0 auto; }
+
+    /* Header */
+    h2.section-header { font-size: 24px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+    .header-bar { width: 60px; height: 4px; background: #c25968; margin-bottom: 20px; border-radius: 2px; }
+
+    /* Top Salary Input Banner */
+    .salary-main-input-row { display: flex; align-items: center; gap: 12px; font-size: 18px; color: #333; margin-bottom: 20px; flex-wrap: wrap; background: #f8fafc; padding: 14px 18px; border-radius: 6px; border: 1px solid #e2e8f0; }
+    .main-salary-box { border: 1.5px solid var(--brand-red); padding: 8px 14px; font-size: 20px; font-weight: 700; width: 220px; outline: none; border-radius: 4px; color: #111; }
+    .main-salary-box:focus { box-shadow: 0 0 0 3px rgba(124, 28, 43, 0.15); }
+
+    /* Top Two-Tab Navigation */
+    .tab-nav { display: flex; background: var(--brand-red); border-top-left-radius: 6px; border-top-right-radius: 6px; overflow: hidden; }
+    .tab-btn { flex: 1; text-align: center; background: transparent; border: none; color: #fff; padding: 14px 16px; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s background; }
+    .tab-btn:hover { background: var(--brand-red-dark); }
+    .tab-btn.active { background: #ffffff; color: var(--brand-red); border-bottom: 3px solid var(--brand-red); }
+
+    .tab-content { border: 1px solid var(--border-color); border-top: none; padding: 24px; background: #fff; border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* Category Groupings in Inputs */
+    .category-title { font-size: 15px; font-weight: 700; color: var(--brand-red); border-bottom: 1.5px solid #f1f5f9; padding-bottom: 6px; margin: 20px 0 14px 0; }
+    .category-title:first-of-type { margin-top: 0; }
+
+    .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px 20px; }
+    .form-group { display: flex; flex-direction: column; }
+    .form-group label { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 4px; }
+    .form-group input { padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 4px; font-size: 14px; outline: none; }
+    .form-group input:focus { border-color: var(--brand-red); }
+    .help-subtext { font-size: 11px; color: #64748b; margin-top: 3px; }
+
+    /* Variable Card Box */
+    .variable-card { background: #fdf2f4; border: 1px solid #fbcfe8; padding: 14px; border-radius: 6px; display: flex; flex-direction: column; gap: 8px; }
+    .variable-card-title { font-weight: 700; font-size: 13.5px; color: var(--brand-red); }
+
+    .btn-calc { background: var(--brand-red); color: white; border: none; border-radius: 6px; padding: 14px 28px; font-size: 16px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 24px; transition: 0.2s; }
+    .btn-calc:hover { background: var(--brand-red-dark); }
+
+    /* Results Header Cards */
+    .summary-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 20px; }
+    .summary-card { background: #f8fafc; border: 1px solid var(--border-color); border-radius: 6px; padding: 14px 16px; text-align: center; }
+    .summary-card.highlight { background: #f0fdf4; border-color: #86efac; }
+    .summary-card .label { font-size: 12.5px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .summary-card .amount { font-size: 22px; font-weight: 800; color: #0f172a; margin-top: 4px; }
+    .summary-card.highlight .amount { color: var(--success-green); }
+    .summary-card .sub-amount { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    /* Payslip Table Styling */
+    .payslip-wrap { width: 100%; overflow-x: auto; margin-bottom: 16px; }
+    table.payslip-table { width: 100%; border-collapse: collapse; text-align: left; }
+    table.payslip-table th, table.payslip-table td { padding: 10px 14px; border: 1px solid var(--border-color); font-size: 13px; }
+    table.payslip-table th { background: #f8fafc; font-weight: 600; color: #475569; text-align: right; }
+    table.payslip-table th:first-child { text-align: left; }
+    table.payslip-table td { text-align: right; }
+    table.payslip-table td:first-child { text-align: left; color: #334155; }
+    
+    /* Category Headers */
+    table.payslip-table tr.table-section-head td { background: #f1f5f9; font-weight: 700; color: var(--brand-red); font-size: 13.5px; text-transform: uppercase; letter-spacing: 0.5px; padding: 8px 14px; }
+    table.payslip-table tr.table-subtotal td { background: #fafafa; font-weight: 700; color: #0f172a; border-top: 1.5px solid var(--border-color); }
+    table.payslip-table tr.table-grand-total td { background: #f0fdf4; font-weight: 800; color: var(--success-green); font-size: 15px; border-top: 2px solid #86efac; border-bottom: 2px solid #86efac; }
+
+    .breakdown-badge { font-size: 11px; text-transform: uppercase; color: var(--accent-blue); text-decoration: underline; margin-left: 6px; cursor: pointer; font-weight: 700; }
+    .tax-rate-pill { display: inline-block; background: #e0e7ff; color: #3730a3; font-size: 11px; font-weight: 600; padding: 2px 6px; border-radius: 4px; margin-left: 6px; }
+
+    .checkbox-row { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin-top: 14px; }
+    .checkbox-label { display: inline-flex; align-items: center; gap: 6px; font-size: 13.5px; color: #333; cursor: pointer; }
+    .checkbox-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--brand-red); cursor: pointer; }
+
+    /* Modal / Popup for Tax Breakdown */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.55); z-index: 999; justify-content: center; align-items: center; padding: 16px; }
+    .modal-card { background: #ffffff; width: 100%; max-width: 650px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); overflow: hidden; max-height: 90vh; display: flex; flex-direction: column; }
+    .modal-header { background: var(--brand-red); color: #fff; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { font-size: 16px; font-weight: 600; }
+    .modal-close { background: none; border: none; color: #fff; font-size: 22px; font-weight: 700; cursor: pointer; }
+    .modal-body { padding: 16px; overflow-y: auto; }
+    
+    table.slab-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+    table.slab-table th, table.slab-table td { padding: 8px 12px; border-bottom: 1px solid #e5e7eb; }
+    table.slab-table th { background: #f3f4f6; color: #374151; text-align: left; }
+    table.slab-table td.text-right, table.slab-table th.text-right { text-align: right; }
+    table.slab-table tr.total-bar { background: #fef3c7; font-weight: 700; }
+    table.slab-table tr.grand-total { background: #fee2e2; font-weight: 800; font-size: 14px; }
+
+    @media (max-width: 650px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .summary-cards-grid { grid-template-columns: 1fr; }
+      .salary-main-input-row { font-size: 15px; }
+      .main-salary-box { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <h2 class="section-header">India - In-Hand Salary Calculator</h2>
+  <div class="header-bar"></div>
+
+  <!-- TOP SALARY INPUT WITH TWO-WAY SYNC -->
+  <div class="salary-main-input-row">
+    <span>Total Annual CTC / Salary: ₹</span>
+    <input type="number" class="main-salary-box" id="fixedBaseSalary" value="1200000" oninput="handleAutoDistribute()" placeholder="Enter Total Salary" />
+    <span style="font-size:12px; color:#64748b;">(Includes Fixed + Variables + PF + Insurances. Excludes Gratuity & PT)</span>
+  </div>
+
+  <!-- TOP TWO TABS: INPUTS & RESULTS -->
+  <div class="tab-nav">
+    <button class="tab-btn active" id="btnTabInputs" onclick="showTab('tab-inputs')">1. Salary Inputs</button>
+    <button class="tab-btn" id="btnTabResults" onclick="showTab('tab-results')">2. Salary Slip Breakdown</button>
+  </div>
+
+  <div class="tab-content">
+    
+    <!-- TAB 1: ALL INPUTS -->
+    <div id="tab-inputs" class="tab-pane active">
+      
+      <!-- Fixed Earnings -->
+      <div class="category-title">Fixed Earnings & Allowances (Annual ₹)</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Basic Salary (50%)</label>
+          <input type="number" id="basicSalary" value="600000" oninput="syncTotalFromInputs()" />
+        </div>
+        <div class="form-group">
+          <label>House Rent Allowance (HRA - 25%)</label>
+          <input type="number" id="hraSalary" value="300000" oninput="syncTotalFromInputs()" />
+        </div>
+        <div class="form-group">
+          <label>Personal / Special Allowance</label>
+          <input type="number" id="personalAllowance" value="228000" oninput="syncTotalFromInputs()" />
+        </div>
+        <div class="form-group">
+          <label>Conveyance Allowance</label>
+          <input type="number" id="conveyance" value="0" oninput="syncTotalFromInputs()" />
+        </div>
+        <div class="form-group">
+          <label>Medical Reimbursement</label>
+          <input type="number" id="medReimbursement" value="0" oninput="syncTotalFromInputs()" />
+        </div>
+        <div class="form-group">
+          <label>Leave Transport Allowance (LTA)</label>
+          <input type="number" id="lta" value="0" oninput="syncTotalFromInputs()" />
+        </div>
+        <div class="form-group">
+          <label>Telephone Reimbursement</label>
+          <input type="number" id="telReimbursement" value="0" oninput="syncTotalFromInputs()" />
+        </div>
+        <div class="form-group">
+          <label>Food Coupons / Meal Allowance</label>
+          <input type="number" id="foodCoupons" value="0" oninput="syncTotalFromInputs()" />
+        </div>
+        <div class="form-group">
+          <label>Bonus / City Allowance</label>
+          <input type="number" id="bonusCity" value="0" oninput="syncTotalFromInputs()" />
+        </div>
+        <div class="form-group">
+          <label>Vehicle Allowance</label>
+          <input type="number" id="vehicleAllowance" value="0" oninput="syncTotalFromInputs()" />
+        </div>
+        <div class="form-group">
+          <label>Other Income (Taxable)</label>
+          <input type="number" id="otherIncome" value="0" oninput="syncTotalFromInputs()" />
+          <span class="help-subtext">Capital gains, interest, etc.</span>
+        </div>
+      </div>
+
+      <!-- Variable Pay -->
+      <div class="category-title">Variable Pay Components (Target Amount & Realization %)</div>
+      <div class="form-grid">
+        <!-- Monthly Variable -->
+        <div class="variable-card">
+          <div class="variable-card-title">Variable - Monthly</div>
+          <div class="form-group">
+            <label>Target Annual Amount (₹)</label>
+            <input type="number" id="targetVarMonthly" value="0" oninput="syncTotalFromInputs()" />
+          </div>
+          <div class="form-group">
+            <label>Average Payout Paid (%)</label>
+            <input type="number" id="pctVarMonthly" value="100" min="0" max="200" />
+            <span class="help-subtext">Used strictly for in-hand realization</span>
+          </div>
+        </div>
+
+        <!-- Quarterly Variable -->
+        <div class="variable-card">
+          <div class="variable-card-title">Variable - Quarterly (QVA)</div>
+          <div class="form-group">
+            <label>Target Annual Amount (₹)</label>
+            <input type="number" id="targetVarQuarterly" value="0" oninput="syncTotalFromInputs()" />
+          </div>
+          <div class="form-group">
+            <label>Average Payout Paid (%)</label>
+            <input type="number" id="pctVarQuarterly" value="100" min="0" max="200" />
+            <span class="help-subtext">Used strictly for in-hand realization</span>
+          </div>
+        </div>
+
+        <!-- Annual Variable -->
+        <div class="variable-card">
+          <div class="variable-card-title">Variable - Annual (PLI / Bonus)</div>
+          <div class="form-group">
+            <label>Target Annual Amount (₹)</label>
+            <input type="number" id="targetVarAnnual" value="0" oninput="syncTotalFromInputs()" />
+          </div>
+          <div class="form-group">
+            <label>Average Payout Paid (%)</label>
+            <input type="number" id="pctVarAnnual" value="100" min="0" max="200" />
+            <span class="help-subtext">Used strictly for in-hand realization</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Retirals, Deductions & Benefits -->
+      <div class="category-title">Retirals, Deductions & Benefits (Annual ₹)</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Employee Provident Fund (PF) <span style="color:var(--brand-red);">[In CTC]</span></label>
+          <input type="number" id="pfDeduction" value="72000" oninput="syncTotalFromInputs()" />
+          <span class="help-subtext">12% of Basic (Part of CTC)</span>
+        </div>
+        <div class="form-group">
+          <label>Mediclaim Policy Premium <span style="color:var(--brand-red);">[In CTC]</span></label>
+          <input type="number" id="mediclaim" value="0" oninput="syncTotalFromInputs()" />
+          <span class="help-subtext">Company benefit component (Part of CTC)</span>
+        </div>
+        <div class="form-group">
+          <label>Group Insurance Premium <span style="color:var(--brand-red);">[In CTC]</span></label>
+          <input type="number" id="groupInsurance" value="0" oninput="syncTotalFromInputs()" />
+          <span class="help-subtext">Company benefit component (Part of CTC)</span>
+        </div>
+        <div class="form-group">
+          <label>Personal Accident Policy <span style="color:var(--brand-red);">[In CTC]</span></label>
+          <input type="number" id="personalAccident" value="0" oninput="syncTotalFromInputs()" />
+          <span class="help-subtext">Company benefit component (Part of CTC)</span>
+        </div>
+        <div class="form-group">
+          <label>Gratuity Contribution <span style="color:#64748b;">[Excluded from CTC]</span></label>
+          <input type="number" id="gratuity" value="0" />
+          <span class="help-subtext">Retiral benefit (Not in CTC)</span>
+        </div>
+        <div class="form-group">
+          <label>Professional Tax (PT) <span style="color:#64748b;">[Excluded from CTC]</span></label>
+          <input type="number" id="ptDeduction" value="2500" />
+          <span class="help-subtext">State tax deduction (Not in CTC)</span>
+        </div>
+      </div>
+
+      <button class="btn-calc" onclick="calculateAndSwitch()">Calculate &amp; View Salary Slip &raquo;</button>
+    </div>
+
+    <!-- TAB 2: SALARY SLIP STYLE RESULTS -->
+    <div id="tab-results" class="tab-pane">
+      
+      <!-- High-level Summary Cards -->
+      <div class="summary-cards-grid">
+        <div class="summary-card">
+          <div class="label">Gross Earnings</div>
+          <div class="amount" id="cardGross">₹0</div>
+          <div class="sub-amount" id="cardGrossMo">Monthly: ₹0</div>
+        </div>
+        <div class="summary-card">
+          <div class="label">Total Deductions &amp; Taxes</div>
+          <div class="amount" style="color: #dc2626;" id="cardDed">₹0</div>
+          <div class="sub-amount" id="cardDedMo">Monthly: ₹0</div>
+        </div>
+        <div class="summary-card highlight">
+          <div class="label">Net In-Hand (Take Home)</div>
+          <div class="amount" id="cardNet">₹0</div>
+          <div class="sub-amount" id="cardNetMo">Monthly: ₹0</div>
+        </div>
+      </div>
+
+      <!-- Payslip Table Breakdown -->
+      <div class="payslip-wrap">
+        <table class="payslip-table" id="salaryTable">
+          <thead>
+            <tr>
+              <th style="width: 40%;">Component Description</th>
+              <th class="col-yearly">Yearly (₹)</th>
+              <th class="col-monthly">Monthly (₹)</th>
+              <th class="col-weekly">Weekly (₹)</th>
+              <th class="col-daily">Daily (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            
+            <!-- SECTION 1: INCOMES & EARNINGS -->
+            <tr class="table-section-head">
+              <td colspan="5">1. Incomes &amp; Earnings</td>
+            </tr>
+            <tr>
+              <td>Basic Salary</td>
+              <td class="col-yearly" id="slipBasicYr">₹0.00</td>
+              <td class="col-monthly" id="slipBasicMo">₹0.00</td>
+              <td class="col-weekly" id="slipBasicWk">₹0.00</td>
+              <td class="col-daily" id="slipBasicDay">₹0.00</td>
+            </tr>
+            <tr>
+              <td>House Rent Allowance (HRA)</td>
+              <td class="col-yearly" id="slipHraYr">₹0.00</td>
+              <td class="col-monthly" id="slipHraMo">₹0.00</td>
+              <td class="col-weekly" id="slipHraWk">₹0.00</td>
+              <td class="col-daily" id="slipHraDay">₹0.00</td>
+            </tr>
+            <tr>
+              <td>Personal / Special Allowance</td>
+              <td class="col-yearly" id="slipPersonalYr">₹0.00</td>
+              <td class="col-monthly" id="slipPersonalMo">₹0.00</td>
+              <td class="col-weekly" id="slipPersonalWk">₹0.00</td>
+              <td class="col-daily" id="slipPersonalDay">₹0.00</td>
+            </tr>
+            <tr>
+              <td>Other Fixed Allowances (Conveyance, LTA, Food, etc.)</td>
+              <td class="col-yearly" id="slipOtherAllowYr">₹0.00</td>
+              <td class="col-monthly" id="slipOtherAllowMo">₹0.00</td>
+              <td class="col-weekly" id="slipOtherAllowWk">₹0.00</td>
+              <td class="col-daily" id="slipOtherAllowDay">₹0.00</td>
+            </tr>
+            <tr>
+              <td>
+                Realized Variable Pay (Monthly + Quarterly + Annual)
+                <small style="display:block; color:#64748b; font-size:11px;" id="slipVarSubtext"></small>
+              </td>
+              <td class="col-yearly" id="slipVarYr">₹0.00</td>
+              <td class="col-monthly" id="slipVarMo">₹0.00</td>
+              <td class="col-weekly" id="slipVarWk">₹0.00</td>
+              <td class="col-daily" id="slipVarDay">₹0.00</td>
+            </tr>
+            <tr>
+              <td>Other Taxable Income</td>
+              <td class="col-yearly" id="slipOtherIncYr">₹0.00</td>
+              <td class="col-monthly" id="slipOtherIncMo">₹0.00</td>
+              <td class="col-weekly" id="slipOtherIncWk">₹0.00</td>
+              <td class="col-daily" id="slipOtherIncDay">₹0.00</td>
+            </tr>
+            <tr class="table-subtotal">
+              <td>Total Gross Earnings (A)</td>
+              <td class="col-yearly" id="slipGrossYr">₹0.00</td>
+              <td class="col-monthly" id="slipGrossMo">₹0.00</td>
+              <td class="col-weekly" id="slipGrossWk">₹0.00</td>
+              <td class="col-daily" id="slipGrossDay">₹0.00</td>
+            </tr>
+
+            <!-- SECTION 2: DEDUCTIONS & TAXES -->
+            <tr class="table-section-head">
+              <td colspan="5">2. Taxes, Statutory &amp; Other Deductions</td>
+            </tr>
+            <tr>
+              <td>
+                Income Tax (TDS - New Regime)
+                <span class="breakdown-badge" onclick="openTaxModal()">BREAKDOWN</span>
+                <span class="tax-rate-pill" id="taxRatePill">0.0%</span>
+              </td>
+              <td class="col-yearly" id="slipTaxYr" style="color: #dc2626;">₹0.00</td>
+              <td class="col-monthly" id="slipTaxMo" style="color: #dc2626;">₹0.00</td>
+              <td class="col-weekly" id="slipTaxWk" style="color: #dc2626;">₹0.00</td>
+              <td class="col-daily" id="slipTaxDay" style="color: #dc2626;">₹0.00</td>
+            </tr>
+            <tr>
+              <td>Employee Provident Fund (PF)</td>
+              <td class="col-yearly" id="slipPfYr">₹0.00</td>
+              <td class="col-monthly" id="slipPfMo">₹0.00</td>
+              <td class="col-weekly" id="slipPfWk">₹0.00</td>
+              <td class="col-daily" id="slipPfDay">₹0.00</td>
+            </tr>
+            <tr>
+              <td>Professional Tax (PT)</td>
+              <td class="col-yearly" id="slipPtYr">₹0.00</td>
+              <td class="col-monthly" id="slipPtMo">₹0.00</td>
+              <td class="col-weekly" id="slipPtWk">₹0.00</td>
+              <td class="col-daily" id="slipPtDay">₹0.00</td>
+            </tr>
+            <tr>
+              <td>Insurance &amp; Retiral Deductions (Gratuity, Mediclaim, Group/Accident)</td>
+              <td class="col-yearly" id="slipInsurYr">₹0.00</td>
+              <td class="col-monthly" id="slipInsurMo">₹0.00</td>
+              <td class="col-weekly" id="slipInsurWk">₹0.00</td>
+              <td class="col-daily" id="slipInsurDay">₹0.00</td>
+            </tr>
+            <tr class="table-subtotal">
+              <td>Total Deductions (B)</td>
+              <td class="col-yearly" id="slipTotalDedYr" style="color:#dc2626;">₹0.00</td>
+              <td class="col-monthly" id="slipTotalDedMo" style="color:#dc2626;">₹0.00</td>
+              <td class="col-weekly" id="slipTotalDedWk" style="color:#dc2626;">₹0.00</td>
+              <td class="col-daily" id="slipTotalDedDay" style="color:#dc2626;">₹0.00</td>
+            </tr>
+
+            <!-- SECTION 3: NET TAKE-HOME -->
+            <tr class="table-grand-total">
+              <td>Net In-Hand Salary (A - B)</td>
+              <td class="col-yearly" id="slipNetYr">₹0.00</td>
+              <td class="col-monthly" id="slipNetMo">₹0.00</td>
+              <td class="col-weekly" id="slipNetWk">₹0.00</td>
+              <td class="col-daily" id="slipNetDay">₹0.00</td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+
+      <div class="checkbox-row">
+        <label class="checkbox-label"><input type="checkbox" id="chkYearly" checked onchange="toggleColumns()" /> Yearly</label>
+        <label class="checkbox-label"><input type="checkbox" id="chkMonthly" checked onchange="toggleColumns()" /> Monthly</label>
+        <label class="checkbox-label"><input type="checkbox" id="chkWeekly" checked onchange="toggleColumns()" /> Weekly</label>
+        <label class="checkbox-label"><input type="checkbox" id="chkDaily" checked onchange="toggleColumns()" /> Daily</label>
+      </div>
+
+      <button class="btn-calc" style="background:#475569;" onclick="showTab('tab-inputs')">&laquo; Modify Salary Inputs</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- TAX BREAKDOWN MODAL POPUP -->
+<div class="modal-overlay" id="taxModal" onclick="closeModalOnOuterClick(event)">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Detailed Tax Slabs (New Regime)</h3>
+      <button class="modal-close" onclick="closeTaxModal()">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div style="font-size: 13px; margin-bottom: 8px; color: #4b5563;">
+        Standard Deduction Applied: <strong id="modalStdDed">₹75,000.00</strong> | Taxable Income: <strong id="modalTaxable">₹0</strong>
+      </div>
+      <table class="slab-table">
+        <thead>
+          <tr>
+            <th>Tax Slab / Component</th>
+            <th class="text-right">Rate</th>
+            <th class="text-right">Tax Amount (₹)</th>
+          </tr>
+        </thead>
+        <tbody id="slabBreakdownBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  function formatINR(val) {
+    const isNeg = val < 0;
+    const abs = Math.abs(val);
+    return (isNeg ? "-₹" : "₹") + abs.toLocaleString("en-IN", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function showTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+    
+    if (tabId === 'tab-inputs') {
+      document.getElementById('btnTabInputs').classList.add('active');
+    } else {
+      document.getElementById('btnTabResults').classList.add('active');
+    }
+    document.getElementById(tabId).classList.add('active');
+  }
+
+  function toggleColumns() {
+    const toggle = (cls, show) => {
+      document.querySelectorAll('.' + cls).forEach(cell => cell.style.display = show ? '' : 'none');
+    };
+    toggle('col-yearly', document.getElementById('chkYearly').checked);
+    toggle('col-monthly', document.getElementById('chkMonthly').checked);
+    toggle('col-weekly', document.getElementById('chkWeekly').checked);
+    toggle('col-daily', document.getElementById('chkDaily').checked);
+  }
+
+  function openTaxModal() {
+    document.getElementById('taxModal').style.display = 'flex';
+  }
+
+  function closeTaxModal() {
+    document.getElementById('taxModal').style.display = 'none';
+  }
+
+  function closeModalOnOuterClick(e) {
+    if (e.target.id === 'taxModal') closeTaxModal();
+  }
+
+  function getVal(id) {
+    return parseFloat(document.getElementById(id).value) || 0;
+  }
+
+  function setVal(id, val) {
+    document.getElementById(id).value = Math.round(val);
+  }
+
+  // 1. TOP-TO-BOTTOM: When user changes the Total CTC on top
+  function handleAutoDistribute() {
+    const totalCTC = parseFloat(document.getElementById('fixedBaseSalary').value) || 0;
+
+    // Fixed Structure: 50% Basic, 25% HRA, EPF (12% of Basic = 6% of CTC), Balance to Special Allowance
+    const basic = totalCTC * 0.50;
+    const hra = totalCTC * 0.25;
+    const pf = basic * 0.12;
+    const personal = Math.max(0, totalCTC - (basic + hra + pf));
+
+    setVal('basicSalary', basic);
+    setVal('hraSalary', hra);
+    setVal('personalAllowance', personal);
+    setVal('pfDeduction', pf);
+
+    // Reset other allowances to 0
+    setVal('conveyance', 0);
+    setVal('medReimbursement', 0);
+    setVal('lta', 0);
+    setVal('telReimbursement', 0);
+    setVal('foodCoupons', 0);
+    setVal('bonusCity', 0);
+    setVal('vehicleAllowance', 0);
+    setVal('otherIncome', 0);
+
+    // Reset variables to 0
+    setVal('targetVarMonthly', 0);
+    setVal('targetVarQuarterly', 0);
+    setVal('targetVarAnnual', 0);
+
+    // Reset benefits (in CTC) and non-CTC items
+    setVal('mediclaim', 0);
+    setVal('groupInsurance', 0);
+    setVal('personalAccident', 0);
+    setVal('gratuity', 0);
+    setVal('ptDeduction', 2500);
+  }
+
+  // 2. BOTTOM-TO-TOP: Sync Total CTC = Fixed Allowances + Variables + PF + Mediclaim + Group Ins + Personal Acc
+  // EXCLUDED FROM CTC: Gratuity & Professional Tax (PT)
+  function syncTotalFromInputs() {
+    const basic = getVal('basicSalary');
+    const hra = getVal('hraSalary');
+    const personal = getVal('personalAllowance');
+    const conveyance = getVal('conveyance');
+    const medReimb = getVal('medReimbursement');
+    const lta = getVal('lta');
+    const tel = getVal('telReimbursement');
+    const food = getVal('foodCoupons');
+    const bonusCity = getVal('bonusCity');
+    const vehicle = getVal('vehicleAllowance');
+    const otherIncome = getVal('otherIncome');
+
+    const totalFixed = basic + hra + personal + conveyance + medReimb + lta + tel + food + bonusCity + vehicle + otherIncome;
+
+    const targetVarMonthly = getVal('targetVarMonthly');
+    const targetVarQuarterly = getVal('targetVarQuarterly');
+    const targetVarAnnual = getVal('targetVarAnnual');
+    const totalTargetVar = targetVarMonthly + targetVarQuarterly + targetVarAnnual;
+
+    // Retiral/Benefit items included in CTC
+    const pf = getVal('pfDeduction');
+    const mediclaim = getVal('mediclaim');
+    const groupInsur = getVal('groupInsurance');
+    const personalAcc = getVal('personalAccident');
+
+    // Total CTC strictly includes PF and Insurances (Gratuity and PT excluded)
+    const totalContractualCTC = totalFixed + totalTargetVar + pf + mediclaim + groupInsur + personalAcc;
+    document.getElementById('fixedBaseSalary').value = Math.round(totalContractualCTC);
+  }
+
+  function computeTaxDetails(taxableIncome) {
+    const slabs = [
+      { name: "Up to ₹4,00,000", min: 0, max: 400000, rate: 0.00, label: "Nil" },
+      { name: "From ₹4,00,001 to ₹8,00,000", min: 400000, max: 800000, rate: 0.05, label: "5%" },
+      { name: "From ₹8,00,001 to ₹12,00,000", min: 800000, max: 1200000, rate: 0.10, label: "10%" },
+      { name: "From ₹12,00,001 to ₹16,00,000", min: 1200000, max: 1600000, rate: 0.15, label: "15%" },
+      { name: "From ₹16,00,001 to ₹20,00,000", min: 1600000, max: 2000000, rate: 0.20, label: "20%" },
+      { name: "From ₹20,00,001 to ₹24,00,000", min: 2000000, max: 2400000, rate: 0.25, label: "25%" },
+      { name: "Above ₹24,00,000", min: 2400000, max: Infinity, rate: 0.30, label: "30%" }
+    ];
+
+    let slabDetails = [];
+    let basicTax = 0;
+
+    for (const slab of slabs) {
+      let taxInSlab = 0;
+      if (taxableIncome > slab.min) {
+        const taxableAmount = Math.min(taxableIncome, slab.max) - slab.min;
+        taxInSlab = taxableAmount * slab.rate;
+      }
+      slabDetails.push({ name: slab.name, rate: slab.label, tax: taxInSlab });
+      basicTax += taxInSlab;
+    }
+
+    let rebate87A = (taxableIncome <= 700000) ? basicTax : 0;
+    const taxAfterRebate = Math.max(0, basicTax - rebate87A);
+
+    let surchargeRate = 0;
+    let surchargeLabel = "Nil";
+    if (taxableIncome > 20000000) { surchargeRate = 0.25; surchargeLabel = "25% (>₹2Cr)"; }
+    else if (taxableIncome > 10000000) { surchargeRate = 0.15; surchargeLabel = "15% (>₹1Cr)"; }
+    else if (taxableIncome > 5000000) { surchargeRate = 0.10; surchargeLabel = "10% (>₹50L)"; }
+
+    const surchargeAmount = taxAfterRebate * surchargeRate;
+    const taxAfterSurcharge = taxAfterRebate + surchargeAmount;
+    const cess = taxAfterSurcharge * 0.04;
+    const totalTaxLiability = taxAfterSurcharge + cess;
+
+    return {
+      taxableIncome,
+      slabs: slabDetails,
+      basicTax,
+      rebate87A,
+      taxAfterRebate,
+      surchargeLabel,
+      surchargeAmount,
+      taxAfterSurcharge,
+      cess,
+      totalTaxLiability
+    };
+  }
+
+  function calculateAndSwitch() {
+    // 1. Fixed Earnings
+    const basic = getVal('basicSalary');
+    const hra = getVal('hraSalary');
+    const personal = getVal('personalAllowance');
+    const conveyance = getVal('conveyance');
+    const medReimb = getVal('medReimbursement');
+    const lta = getVal('lta');
+    const tel = getVal('telReimbursement');
+    const food = getVal('foodCoupons');
+    const bonusCity = getVal('bonusCity');
+    const vehicle = getVal('vehicleAllowance');
+    const otherIncome = getVal('otherIncome');
+
+    const otherAllowancesTotal = conveyance + medReimb + lta + tel + food + bonusCity + vehicle;
+
+    // 2. Realized Variable Pay
+    const varMonthly = getVal('targetVarMonthly') * (getVal('pctVarMonthly') / 100);
+    const varQuarterly = getVal('targetVarQuarterly') * (getVal('pctVarQuarterly') / 100);
+    const varAnnual = getVal('targetVarAnnual') * (getVal('pctVarAnnual') / 100);
+    const totalRealizedVariable = varMonthly + varQuarterly + varAnnual;
+
+    // Total Gross Salary Earnings
+    const grossSalary = basic + hra + personal + otherAllowancesTotal + totalRealizedVariable;
+    const totalGross = grossSalary + otherIncome;
+
+    // 3. Taxes
+    const stdDeductionAllowed = Math.min(grossSalary, 75000);
+    const taxableIncome = Math.max(0, (grossSalary - stdDeductionAllowed) + otherIncome);
+    const taxData = computeTaxDetails(taxableIncome);
+
+    // 4. Deductions & Retirals
+    const pf = getVal('pfDeduction');
+    const pt = getVal('ptDeduction');
+    const gratuity = getVal('gratuity');
+    const mediclaim = getVal('mediclaim');
+    const groupInsur = getVal('groupInsurance');
+    const personalAcc = getVal('personalAccident');
+    const totalInsuranceAndRetirals = gratuity + mediclaim + groupInsur + personalAcc;
+
+    const totalDeductions = taxData.totalTaxLiability + pf + pt + totalInsuranceAndRetirals;
+    const netTakeHome = totalGross - totalDeductions;
+
+    // Effective Tax Rate %
+    const effectiveTaxRate = totalGross > 0 ? ((taxData.totalTaxLiability / totalGross) * 100).toFixed(1) : "0.0";
+    document.getElementById('taxRatePill').innerText = effectiveTaxRate + "% effective";
+
+    // Summary Cards
+    document.getElementById('cardGross').innerText = formatINR(totalGross);
+    document.getElementById('cardGrossMo').innerText = "Monthly: " + formatINR(totalGross / 12);
+
+    document.getElementById('cardDed').innerText = formatINR(totalDeductions);
+    document.getElementById('cardDedMo').innerText = "Monthly: " + formatINR(totalDeductions / 12);
+
+    document.getElementById('cardNet').innerText = formatINR(netTakeHome);
+    document.getElementById('cardNetMo').innerText = "Monthly: " + formatINR(netTakeHome / 12);
+
+    // Helper to populate breakdown rows
+    const setRow = (prefix, val) => {
+      document.getElementById(prefix + 'Yr').innerText = formatINR(val);
+      document.getElementById(prefix + 'Mo').innerText = formatINR(val / 12);
+      document.getElementById(prefix + 'Wk').innerText = formatINR(val / 52);
+      document.getElementById(prefix + 'Day').innerText = formatINR(val / 260);
+    };
+
+    // Earnings Section
+    setRow('slipBasic', basic);
+    setRow('slipHra', hra);
+    setRow('slipPersonal', personal);
+    setRow('slipOtherAllow', otherAllowancesTotal);
+    setRow('slipVar', totalRealizedVariable);
+    setRow('slipOtherInc', otherIncome);
+    setRow('slipGross', totalGross);
+
+    document.getElementById('slipVarSubtext').innerText = 
+      `Monthly: ${formatINR(varMonthly)} | Quarterly: ${formatINR(varQuarterly)} | Annual: ${formatINR(varAnnual)}`;
+
+    // Deductions Section
+    setRow('slipTax', taxData.totalTaxLiability);
+    setRow('slipPf', pf);
+    setRow('slipPt', pt);
+    setRow('slipInsur', totalInsuranceAndRetirals);
+    setRow('slipTotalDed', totalDeductions);
+
+    // Net Take Home Row
+    setRow('slipNet', netTakeHome);
+
+    // Modal updates
+    document.getElementById('modalStdDed').innerText = formatINR(stdDeductionAllowed);
+    document.getElementById('modalTaxable').innerText = formatINR(taxableIncome);
+    renderModalTable(taxData);
+
+    // Switch to Results Tab
+    showTab('tab-results');
+  }
+
+  function renderModalTable(taxData) {
+    let rowsHtml = '';
+    taxData.slabs.forEach(s => {
+      rowsHtml += `
+        <tr>
+          <td>${s.name}</td>
+          <td class="text-right">${s.rate}</td>
+          <td class="text-right">${formatINR(s.tax)}</td>
+        </tr>
+      `;
+    });
+
+    rowsHtml += `
+      <tr class="total-bar">
+        <td colspan="2">Tax on Income</td>
+        <td class="text-right">${formatINR(taxData.basicTax)}</td>
+      </tr>
+      <tr>
+        <td colspan="2">Less: Section 87A Rebate</td>
+        <td class="text-right" style="color:#059669;">- ${formatINR(taxData.rebate87A)}</td>
+      </tr>
+      <tr>
+        <td colspan="2">Surcharge (${taxData.surchargeLabel})</td>
+        <td class="text-right">${formatINR(taxData.surchargeAmount)}</td>
+      </tr>
+      <tr>
+        <td colspan="2">Health & Education Cess (4%)</td>
+        <td class="text-right">${formatINR(taxData.cess)}</td>
+      </tr>
+      <tr class="grand-total">
+        <td colspan="2">Total Income Tax Liability</td>
+        <td class="text-right">${formatINR(taxData.totalTaxLiability)}</td>
+      </tr>
+    `;
+
+    document.getElementById('slabBreakdownBody').innerHTML = rowsHtml;
+  }
+
+  // Initial column setup
+  toggleColumns();
+</script>
+
+</body>
+</html>
