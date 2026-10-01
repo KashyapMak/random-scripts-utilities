@@ -4,29 +4,27 @@ Welcome to **A Utility Hub**, a collection of practical browser tools and script
 
 Whether it's system maintenance, file management, or workflow shortcuts, these utilities are built to be lightweight, transparent, and effective.
 
----
-
-## 🚀 Featured Utility: Browser & Machine Cleanup
-
-The flagship tool in this repository is the **Browser & Machine Cleanup Utility**. Unlike standard "cleaners" that log you out of everything, this script is designed for the power user who wants a clean machine without the friction of re-entering passwords.
-
-### 🧹 [Browser & Machine Cleanup](./browser-machine-clean/)
-Located in the `browser-machine-clean/` directory, this PowerShell script is a surgical maintenance tool.
-
-* **Smart Browser Cleaning:** Targets Chrome, Edge, and Brave across all profiles.
-* **Safety First:** Wipes heavy caches but **leaves Cookies, History, and Passwords untouched**.
-* **System Deep-Clean:** Dynamically identifies your system drive to clear Windows Temp, Update downloads, Prefetch, and DirectX shaders.
-* **Adaptive Permissions:** Automatically detects if it's running with Admin rights and adjusts its scope accordingly.
-* **Detailed Logging:** Reports exactly how many MB/GB were reclaimed from each specific profile and system folder.
+**Demo:** [https://kashyapmak.github.io/random-scripts-utilities/](https://kashyapmak.github.io/random-scripts-utilities/)
 
 ---
 
-## 📂 Repository Structure
+## 📂 Available Utilities
 
-| Folder | Utility | Description |
+| Utility | Type | Description |
 | :--- | :--- | :--- |
-| `browser-machine-clean/` | **Clean-Browsers-and-machine.ps1** | Multi-browser cache and system temp cleanup. |
-| `...` | *More tools coming soon* | *Stay tuned for more "pro" utilities.* |
+| [India In-Hand Salary Calculator](./calculators/India-In-Hand-Salary-Calculator.html) | Browser | Estimate take-home pay in India by adjusting salary components and tax assumptions. |
+| [Base64 Image Studio](./html-development-utilities/base64-to-image.html) | Browser | Decode Base64 image data, preview the result, and work with the generated image. |
+| [Photo Resize Studio](./image-resizer/index.html) | Browser | Crop, rotate, resize, and compress photos in your browser with physical units and passport presets. |
+| [URL Encoder/Decoder](./html-development-utilities/endcode-decode.html) | Browser | Encode text for URLs or decode percent-encoded strings in your browser. |
+| [Power Automate ISO-8601 Duration Generator](./html-development-utilities/ISO-8601-Duration-Generator.html) | Browser | Build ISO-8601 duration values for use in Power Automate flows. |
+| [Markdown Live Editor & Previewer](./html-development-utilities/markdown-editor.html) | Browser | Write Markdown, inspect a live preview, and switch to the rendered raw HTML. |
+| [String Unescaper](./html-development-utilities/unescaper.html) | Browser | Turn escaped string content into readable text for inspection and reuse. |
+| [Local JSON Compare Tool](./json-compare-tool/index.html) | Browser | Validate, format, and compare two JSON documents side by side in your browser. |
+| [JSON Schema Generation & Validation Tool](./json-schema-tool/index.html) | Browser | Generate a JSON schema from sample data, then validate JSON against a schema. |
+| [Sprint Project Planner](./sprint-project-planner/index.html) | Browser | Plan projects and organize work into sprints with a browser-based workspace. |
+| [PixelMark](https://kashyapmak.github.io/PixelMark/) | External | Create image annotations, tutorials, bug reports, and screenshot markups. |
+| [Browser & Machine Cleanup](./browser-machine-clean/Clean-Browsers-and-machine.ps1) | Download | Clean disposable browser caches and Windows temporary files while preserving cookies, history, and passwords. |
+| [YouTube & Video Frame Extractor](./video-to-images/frame-extract.py) | Download | Extract and deduplicate video frames from a local file or YouTube URL, with optional OCR and exports. |
 
 ---
 
