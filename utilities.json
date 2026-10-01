@@ -1,0 +1,106 @@
+[
+  {
+    "name": "India In-Hand Salary Calculator",
+    "description": "Estimate take-home pay in India by adjusting salary components and tax assumptions.",
+    "category": "Finance",
+    "type": "browser",
+    "path": "calculators/India-In-Hand-Salary-Calculator.html",
+    "tags": ["salary", "tax", "india", "calculator"]
+  },
+  {
+    "name": "Base64 Image Studio",
+    "description": "Decode Base64 image data, preview the result, and work with the generated image.",
+    "category": "Developer",
+    "type": "browser",
+    "path": "html-development-utilities/base64-to-image.html",
+    "tags": ["base64", "image", "encode", "decode"]
+  },
+  {
+    "name": "Photo Resize Studio",
+    "description": "Crop, rotate, resize, and compress photos in your browser with physical units and passport presets.",
+    "category": "Images",
+    "type": "browser",
+    "path": "image-resizer/index.html",
+    "tags": ["image", "photo", "resize", "crop", "compress", "passport"]
+  },
+  {
+    "name": "URL Encoder/Decoder",
+    "description": "Encode text for URLs or decode percent-encoded strings in your browser.",
+    "category": "Developer",
+    "type": "browser",
+    "path": "html-development-utilities/endcode-decode.html",
+    "tags": ["url", "encode", "decode", "text"]
+  },
+  {
+    "name": "Power Automate ISO-8601 Duration Generator",
+    "description": "Build ISO-8601 duration values for use in Power Automate flows.",
+    "category": "Developer",
+    "type": "browser",
+    "path": "html-development-utilities/ISO-8601-Duration-Generator.html",
+    "tags": ["iso-8601", "duration", "power automate", "time"]
+  },
+  {
+    "name": "Markdown Live Editor & Previewer",
+    "description": "Write Markdown, inspect a live preview, and switch to the rendered raw HTML.",
+    "category": "Developer",
+    "type": "browser",
+    "path": "html-development-utilities/markdown-editor.html",
+    "tags": ["markdown", "html", "preview", "editor"]
+  },
+  {
+    "name": "String Unescaper",
+    "description": "Turn escaped string content into readable text for inspection and reuse.",
+    "category": "Developer",
+    "type": "browser",
+    "path": "html-development-utilities/unescaper.html",
+    "tags": ["string", "escape", "unescape", "text"]
+  },
+  {
+    "name": "Local JSON Compare Tool",
+    "description": "Validate, format, and compare two JSON documents side by side in your browser.",
+    "category": "Developer",
+    "type": "browser",
+    "path": "json-compare-tool/index.html",
+    "tags": ["json", "compare", "diff", "format"]
+  },
+  {
+    "name": "JSON Schema Generation & Validation Tool",
+    "description": "Generate a JSON schema from sample data, then validate JSON against a schema.",
+    "category": "Developer",
+    "type": "browser",
+    "path": "json-schema-tool/index.html",
+    "tags": ["json", "schema", "validate", "generate"]
+  },
+  {
+    "name": "Sprint Project Planner",
+    "description": "Plan projects and organize work into sprints with a browser-based workspace.",
+    "category": "Planning",
+    "type": "browser",
+    "path": "sprint-project-planner/index.html",
+    "tags": ["project", "sprint", "planning", "agile"]
+  },
+  {
+    "name": "PixelMark",
+    "description": "A modern, responsive web application designed for fast, crisp, and professional image annotations, tutorial creation, bug reporting, and screenshot markups.",
+    "category": "Creative",
+    "type": "external",
+    "path": "https://kashyapmak.github.io/PixelMark/",
+    "tags": ["image", "annotation", "tutorials", "bug reports", "screenshots"]
+  },
+  {
+    "name": "Browser & Machine Cleanup",
+    "description": "Clean disposable browser caches and Windows temporary files while preserving cookies, history, and passwords.",
+    "category": "System",
+    "type": "download",
+    "path": "browser-machine-clean/Clean-Browsers-and-machine.ps1",
+    "tags": ["windows", "powershell", "browser", "cleanup"]
+  },
+  {
+    "name": "YouTube & Video Frame Extractor",
+    "description": "Extract and deduplicate video frames from a local file or YouTube URL, with optional OCR and exports.",
+    "category": "Media",
+    "type": "download",
+    "path": "video-to-images/frame-extract.py",
+    "tags": ["video", "frames", "youtube", "ocr", "python"]
+  }
+]

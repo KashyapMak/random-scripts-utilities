@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f3f6f2">
+    <title>Photo Resize Studio | A Utility Hub</title>
+    <script defer src="../home-link.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="page-heading">
+        <div>
+            <p class="eyebrow">Image tools / Client-side</p>
+            <h1>Photo Resize Studio</h1>
+            <p class="heading-copy">Prepare a photo to exact dimensions and file-size limits. Your original stays untouched.</p>
+        </div>
+        <span class="privacy-badge"><span aria-hidden="true"></span> Processing stays on this device</span>
+    </header>
+
+    <main class="app-shell">
+        <section class="upload-bar" aria-label="Choose an image">
+            <div class="upload-copy">
+                <strong id="file-name">No image selected</strong>
+                <span id="source-details">Choose a photo to begin</span>
+            </div>
+            <label class="button button-primary file-button" for="image-input">
+                Choose image
+                <input id="image-input" type="file" accept="image/*" hidden>
+            </label>
+        </section>
+
+        <div class="view-tabs" role="tablist" aria-label="Image utility views">
+            <button class="view-tab active" id="editor-tab" type="button" role="tab" aria-selected="true" aria-controls="editor-panel">Image Editor</button>
+            <button class="view-tab" id="print-tab" type="button" role="tab" aria-selected="false" aria-controls="print-panel" disabled>Print Preview</button>
+        </div>
+
+        <section class="tab-panel" id="editor-panel" role="tabpanel" aria-labelledby="editor-tab">
+        <div class="workspace">
+            <aside class="controls-panel" aria-label="Image settings">
+                <section class="control-section">
+                    <div class="section-heading">
+                        <span class="section-index">01</span>
+                        <h2>Photo size</h2>
+                    </div>
+                    <label class="field-label" for="preset-select">Print / passport preset</label>
+                    <select id="preset-select" class="field-control">
+                        <option value="custom">Custom dimensions</option>
+                        <option value="us-passport">United States passport - 2 x 2 in</option>
+                        <option value="india-passport">India passport - 35 x 45 mm</option>
+                        <option value="uk-passport">United Kingdom passport - 35 x 45 mm</option>
+                        <option value="eu-passport">Common EU photo - 35 x 45 mm</option>
+                    </select>
+                    <p class="field-hint">Presets are starting dimensions; verify current photo requirements for your destination.</p>
+                    <div class="dimension-grid">
+                        <label class="field-label" for="width-input">Width
+                            <input class="field-control dimension-input" id="width-input" type="number" min="1" max="20000" step="any" value="1200" disabled>
+                        </label>
+                        <label class="field-label" for="height-input">Height
+                            <input class="field-control dimension-input" id="height-input" type="number" min="1" max="20000" step="any" value="1600" disabled>
+                        </label>
+                    </div>
+                    <div class="dimension-options">
+                        <label class="field-label" for="unit-select">Units
+                            <select class="field-control" id="unit-select" disabled>
+                                <option value="px">Pixels</option>
+                                <option value="mm">Millimeters</option>
+                                <option value="cm">Centimeters</option>
+                                <option value="in">Inches</option>
+                            </select>
+                        </label>
+                        <label class="field-label" for="dpi-input">Resolution (DPI)
+                            <input class="field-control" id="dpi-input" type="number" min="1" max="2400" step="1" value="300" disabled>
+                            <small class="field-hint">Used to convert physical units to pixels.</small>
+                        </label>
+                    </div>
+                    <label class="check-row">
+                        <input id="lock-ratio" type="checkbox" checked disabled>
+                        <span>Lock aspect ratio</span>
+                    </label>
+                </section>
+
+                <section class="control-section">
+                    <div class="section-heading">
+                        <span class="section-index">02</span>
+                        <h2>Crop and rotate</h2>
+                    </div>
+                    <label class="field-label" for="crop-ratio">Crop ratio
+                        <select class="field-control" id="crop-ratio" disabled>
+                            <option value="free">Free</option>
+                            <option value="target" selected>Match output dimensions</option>
+                            <option value="square">Square (1:1)</option>
+                        </select>
+                    </label>
+                    <div class="button-row crop-buttons">
+                        <button class="button button-secondary" id="crop-mode" type="button" aria-pressed="false" disabled>Start crop</button>
+                        <button class="button button-secondary" id="apply-crop" type="button" disabled>Apply crop</button>
+                    </div>
+                    <div class="button-row rotate-buttons">
+                        <button class="button button-quiet" id="rotate-left" type="button" disabled>Rotate left</button>
+                        <button class="button button-quiet" id="rotate-right" type="button" disabled>Rotate right</button>
+                    </div>
+                    <button class="text-button" id="reset-image" type="button" disabled>Reset to original</button>
+                </section>
+
+            </aside>
+
+            <section class="preview-panel" aria-label="Image preview">
+                <div class="preview-toolbar">
+                    <div>
+                        <h2>Image Editor</h2>
+                        <p id="preview-caption">The source file is never modified.</p>
+                    </div>
+                </div>
+                <div class="canvas-stage" id="canvas-stage">
+                    <div class="empty-state" id="empty-state">
+                        <span class="empty-mark" aria-hidden="true">+</span>
+                        <strong>Choose an image to start editing</strong>
+                        <span>JPEG, PNG, WebP, and other browser-supported formats</span>
+                    </div>
+                    <canvas id="preview-canvas" aria-label="Image preview and crop selection" hidden></canvas>
+                </div>
+                <div class="stage-footer">
+                    <span id="image-details">Current working image dimensions and size will appear here.</span>
+                    <span id="crop-hint">Select a photo to enable editing controls.</span>
+                </div>
+                <section class="editor-export" aria-label="Export edited image">
+                    <div class="section-heading">
+                        <span class="section-index">03</span>
+                        <h2>Export image</h2>
+                    </div>
+                    <div class="editor-export-grid">
+                        <label class="field-label" for="format-select">File format
+                            <select class="field-control" id="format-select" disabled>
+                                <option value="image/jpeg">JPEG</option>
+                                <option value="image/webp">WebP</option>
+                                <option value="image/png">PNG</option>
+                            </select>
+                        </label>
+                        <label class="field-label quality-field" for="quality-input">Quality <span id="quality-value">84%</span>
+                            <input id="quality-input" type="range" min="10" max="100" value="84" disabled>
+                        </label>
+                        <div class="target-size-control">
+                            <label class="check-row">
+                                <input id="target-size-enabled" type="checkbox" disabled>
+                                <span>Maximum file size</span>
+                            </label>
+                            <div class="target-size-row">
+                                <label class="field-label sr-only" for="target-size-input">Maximum file size</label>
+                                <input class="field-control" id="target-size-input" type="number" min="1" step="any" placeholder="200" disabled>
+                                <select class="field-control size-unit" id="target-size-unit" aria-label="Maximum size unit" disabled>
+                                    <option value="KB">KB</option>
+                                    <option value="MB">MB</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="editor-export-action">
+                            <button class="button button-primary export-button" id="export-button" type="button" disabled>Export image</button>
+                            <p class="export-result" id="export-result" aria-live="polite">Output size will appear here</p>
+                            <a class="download-link" id="download-link" hidden>Download image</a>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </div>
+        </section>
+        <section class="tab-panel print-panel" id="print-panel" role="tabpanel" aria-labelledby="print-tab" hidden>
+            <div class="print-layout">
+                <aside class="print-controls">
+                    <div class="section-heading">
+                        <span class="section-index">01</span>
+                        <h2>Print layout</h2>
+                    </div>
+                    <label class="field-label" for="paper-size">Paper size
+                        <select class="field-control" id="paper-size" disabled>
+                            <option value="a4">A4 - 210 x 297 mm</option>
+                            <option value="letter">US Letter - 8.5 x 11 in</option>
+                        </select>
+                    </label>
+                    <div class="dimension-grid">
+                        <label class="field-label" for="copy-count">Photo copies
+                            <input class="field-control" id="copy-count" type="number" min="1" max="100" step="1" value="12" disabled>
+                        </label>
+                        <label class="field-label" for="print-dpi">Sheet resolution (DPI)
+                            <input class="field-control" id="print-dpi" type="number" min="72" max="600" step="1" value="300" disabled>
+                        </label>
+                    </div>
+                    <div class="dimension-grid">
+                        <label class="field-label" for="sheet-margin">Margin (mm)
+                            <input class="field-control" id="sheet-margin" type="number" min="0" max="30" step="0.5" value="5" disabled>
+                        </label>
+                        <label class="field-label" for="sheet-gap">Photo gap (mm)
+                            <input class="field-control" id="sheet-gap" type="number" min="0" max="20" step="0.5" value="3" disabled>
+                        </label>
+                    </div>
+                    <p class="sheet-layout-info" id="sheet-layout-info" aria-live="polite">Choose an image to create a print sheet.</p>
+                    <button class="button button-primary print-export-button" id="print-export-button" type="button" disabled>Export print sheet</button>
+                    <p class="export-result" id="print-export-result" aria-live="polite">A4 or Letter PNG will be created at the selected DPI.</p>
+                    <a class="download-link" id="print-download-link" hidden>Download print sheet PNG</a>
+                </aside>
+                <section class="preview-panel print-preview-panel" aria-label="Print sheet preview">
+                    <div class="preview-toolbar">
+                        <div>
+                            <h2>Print Preview</h2>
+                            <p>Repeated copies on a centered print sheet.</p>
+                        </div>
+                    </div>
+                    <div class="canvas-stage print-canvas-stage" id="print-canvas-stage">
+                        <div class="empty-state" id="print-empty-state">
+                            <span class="empty-mark" aria-hidden="true">+</span>
+                            <strong>Print preview is ready when your image is</strong>
+                            <span>Choose a photo in Image Editor.</span>
+                        </div>
+                        <canvas id="sheet-canvas" aria-label="Repeated photo print sheet preview" hidden></canvas>
+                    </div>
+                    <div class="stage-footer print-stage-footer">
+                        <span id="print-sheet-details">No print sheet yet</span>
+                    </div>
+                </section>
+            </div>
+        </section>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>

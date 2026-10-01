@@ -4,48 +4,61 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>URL Encoder/Decoder</title>
+    <script defer src="../home-link.js"></script>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            max-width: 700px;
-            margin: 50px auto;
-            padding: 20px;
-            background-color: #f9f9fb;
+            max-width: none;
+            margin: 0;
+            padding: 88px 24px 40px;
+            color: #17382d;
+            background-color: #f2f6f2;
         }
-        h2 { color: #333; }
+        .tool-shell { width: min(1120px, 100%); margin: 0 auto; }
+        .tool-heading { margin-bottom: 24px; }
+        .tool-heading p { margin: 0 0 9px; color: #176c55; font: 11px "DM Mono", monospace; text-transform: uppercase; }
+        h1 { margin: 0; color: #17382d; font: 600 32px/1.2 "Space Grotesk", system-ui, sans-serif; }
+        .tool-description { margin: 9px 0 0 !important; color: #596761 !important; font: 14px/1.55 system-ui, sans-serif !important; text-transform: none !important; }
         textarea {
             width: 100%;
-            height: 250px;
+            height: min(50vh, 480px);
+            min-height: 280px;
             padding: 15px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
+            border: 1px solid #cad8ce;
+            border-radius: 5px;
+            background: #fff;
+            color: #183c30;
             font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
             font-size: 14px;
+            line-height: 1.55;
             box-sizing: border-box;
             transition: border-color 0.2s;
+            padding: 10px;
         }
         textarea:focus {
             outline: none;
-            border-color: #4a90e2;
+            border-color: #45896e;
+            box-shadow: 0 0 0 3px rgba(69, 137, 110, .13);
         }
         .button-group {
             margin-top: 15px;
-            display: flex;
-            gap: 10px;
+            display: grid;
+            grid-template-columns: 1fr 1fr .7fr;
+            gap: 9px;
         }
         button {
-            flex: 1;
-            padding: 12px;
+            min-height: 44px;
+            padding: 10px 14px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             border: none;
-            border-radius: 6px;
+            border-radius: 5px;
             transition: opacity 0.2s;
         }
-        .encode { background-color: #4a90e2; color: white; }
-        .decode { background-color: #50b3a2; color: white; }
-        .clear { background-color: #e0e0e0; color: #333; flex: 0.5; }
+        .encode { background-color: #176c55; color: white; }
+        .decode { background-color: #cf593d; color: white; }
+        .clear { background-color: #e8eee9; color: #28463a; }
         button:hover { opacity: 0.85; }
         button:active { transform: translateY(1px); }
         .hint {
@@ -54,21 +67,32 @@
             color: #666;
             font-style: italic;
         }
+        @media (max-width: 640px) {
+            body { padding: 78px 16px 28px; }
+            h1 { font-size: 27px; }
+            textarea { height: 42vh; min-height: 220px; }
+        }
     </style>
 </head>
 <body>
 
-    <h2>URL Encoder / Decoder</h2>
-    
-    <textarea id="ioField" placeholder="Paste your URL or text here..."></textarea>
+    <main class="tool-shell">
+        <header class="tool-heading">
+            <p>Text utilities</p>
+            <h1>URL Encoder / Decoder</h1>
+            <p class="tool-description">Encode or decode URL-safe text directly in your browser.</p>
+        </header>
 
-    <div class="button-group">
-        <button class="encode" onclick="process('encode')">Encode</button>
-        <button class="decode" onclick="process('decode')">Decode</button>
-        <button class="clear" onclick="clearField()">Clear</button>
-    </div>
+        <textarea id="ioField" placeholder="Paste your URL or text here..."></textarea>
 
-    <p class="hint">Note: This happens locally in your browser. No data is sent to a server.</p>
+        <div class="button-group">
+            <button class="encode" onclick="process('encode')">Encode</button>
+            <button class="decode" onclick="process('decode')">Decode</button>
+            <button class="clear" onclick="clearField()">Clear</button>
+        </div>
+
+        <p class="hint">This happens locally in your browser. No data is sent to a server.</p>
+    </main>
 
     <script>
         const field = document.getElementById('ioField');

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown Live Editor & Previewer</title>
+    <script defer src="../home-link.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     
@@ -27,8 +28,13 @@
 
         /* Main Workspace split screen */
         .workspace { display: flex; flex: 1; overflow: hidden; }
-        .pane { width: 50%; display: flex; flex-direction: column; background: #fff; }
+        .pane { flex: 0 0 calc((100% - 8px) / 2); min-width: 180px; display: flex; flex-direction: column; background: #fff; }
         .left-pane { border-right: 1px solid #ddd; }
+        .splitter { flex: 0 0 8px; cursor: col-resize; background: #f5f5f7; border-left: 1px solid #ddd; border-right: 1px solid #ddd; touch-action: none; }
+        .splitter:hover, .splitter:focus-visible { background: #dbeafe; outline: none; }
+        .workspace.preview-only .left-pane, .workspace.preview-only .splitter { display: none; }
+        .workspace.preview-only .right-pane { flex: 1 1 100%; }
+        body.resizing { cursor: col-resize; user-select: none; }
         
         /* Pane Titles / Tabs */
         .pane-header { background: #fafafa; border-bottom: 1px solid #ddd; padding: 8px 15px; display: flex; gap: 10px; align-items: center; min-height: 45px; }
@@ -38,6 +44,11 @@
         .tabs { display: flex; gap: 5px; }
         .tab-btn { background: none; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-size: 0.85rem; color: #666; }
         .tab-btn.active { background: #e8e8ed; color: #000; font-weight: 600; }
+        .header-controls { display: flex; gap: 8px; align-items: center; }
+        .zoom-controls { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+        .control-btn { background: #fff; color: #333; border: 1px solid #ccc; border-radius: 4px; min-width: 32px; min-height: 30px; padding: 4px 8px; cursor: pointer; font-size: 0.85rem; }
+        .control-btn:hover { background: #f0f0f0; }
+        .zoom-level { min-width: 42px; text-align: center; font-size: 0.8rem; color: #555; }
 
         /* Content Areas */
         .content-area { flex: 1; padding: 20px; overflow-y: auto; font-size: 1rem; line-height: 1.6; }
@@ -58,6 +69,16 @@
         .preview-body :not(pre) > code { background: rgba(27,31,35,0.08); padding: 0.2em 0.4em; border-radius: 3px; font-family: monospace; font-size: 85%; color: #d63384; }
         .preview-body ul, .preview-body ol { padding-left: 2rem; margin-bottom: 1rem; }
         .preview-body pre { margin-bottom: 1rem; border-radius: 6px; }
+        .preview-body { zoom: 1; }
+        @media (max-width: 640px) {
+            header { gap: 10px; padding: 10px; }
+            h1 { font-size: 1rem; }
+            .pane { min-width: 140px; }
+            .content-area { padding: 12px; }
+            .pane-header { padding: 8px; gap: 5px; }
+            .tab-btn { padding: 6px 8px; }
+            .header-controls { gap: 4px; }
+        }
     </style>
 </head>
 <body>
@@ -65,9 +86,10 @@
     <header>
         <h1>Markdown Editor</h1>
         <div class="file-input-wrapper">
-            <button class="btn">📂 Load .md File</button>
+            <button class="btn" type="button">Load .md File</button>
             <input type="file" id="file-input" accept=".md,.txt">
         </div>
+        <button class="control-btn" id="preview-only-btn" type="button" aria-pressed="false">Preview only</button>
     </header>
 
     <div class="workspace">
@@ -80,11 +102,19 @@
             </div>
         </div>
 
+        <div class="splitter" id="splitter" role="separator" aria-label="Resize input and preview panels" aria-orientation="vertical" aria-valuemin="20" aria-valuemax="80" aria-valuenow="50" tabindex="0"></div>
+
         <div class="pane right-pane">
             <div class="pane-header">
                 <div class="tabs">
-                    <button class="tab-btn active" onclick="switchTab('preview')">Live Preview</button>
-                    <button class="tab-btn" onclick="switchTab('html')">Raw HTML</button>
+                    <button class="tab-btn active" type="button" onclick="switchTab('preview', this)">Live Preview</button>
+                    <button class="tab-btn" type="button" onclick="switchTab('html', this)">Raw HTML</button>
+                </div>
+                <div class="zoom-controls" id="zoom-controls">
+                    <button class="control-btn" id="zoom-out" type="button" aria-label="Zoom out" title="Zoom out">−</button>
+                    <span class="zoom-level" id="zoom-level">100%</span>
+                    <button class="control-btn" id="zoom-in" type="button" aria-label="Zoom in" title="Zoom in">+</button>
+                    <button class="control-btn" id="zoom-reset" type="button" title="Reset zoom">Reset</button>
                 </div>
             </div>
             <div class="content-area">
@@ -100,7 +130,14 @@
     <script>
         const editor = document.getElementById('markdown-editor');
         const fileInput = document.getElementById('file-input');
-        
+        const workspace = document.querySelector('.workspace');
+        const splitter = document.getElementById('splitter');
+        const leftPane = document.querySelector('.left-pane');
+        const rightPane = document.querySelector('.right-pane');
+        const previewOnlyButton = document.getElementById('preview-only-btn');
+        const zoomLevel = document.getElementById('zoom-level');
+        let previewZoom = 1;
+
         const viewPreview = document.getElementById('view-preview');
         const htmlOutput = document.getElementById('html-output');
 
@@ -141,19 +178,74 @@
         });
 
         // Tab Switching Engine
-        function switchTab(tabId) {
+        function switchTab(tabId, button) {
             // Update Active Buttons
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+            button.classList.add('active');
 
             // Update Active Panels
             document.querySelectorAll('.view-panel').forEach(panel => panel.style.display = 'none');
             document.getElementById(`view-${tabId}`).style.display = 'block';
+            document.getElementById('zoom-controls').style.display = tabId === 'preview' ? 'flex' : 'none';
         }
+
+        previewOnlyButton.addEventListener('click', function() {
+            const isPreviewOnly = workspace.classList.toggle('preview-only');
+            previewOnlyButton.setAttribute('aria-pressed', String(isPreviewOnly));
+            previewOnlyButton.textContent = isPreviewOnly ? 'Show editor' : 'Preview only';
+        });
+
+        function setPreviewZoom(zoom) {
+            previewZoom = Math.min(2, Math.max(0.5, zoom));
+            viewPreview.style.zoom = String(previewZoom);
+            zoomLevel.textContent = `${Math.round(previewZoom * 100)}%`;
+        }
+
+        document.getElementById('zoom-out').addEventListener('click', () => setPreviewZoom(previewZoom - 0.1));
+        document.getElementById('zoom-in').addEventListener('click', () => setPreviewZoom(previewZoom + 0.1));
+        document.getElementById('zoom-reset').addEventListener('click', () => setPreviewZoom(1));
+
+        function resizePanels(clientX) {
+            const bounds = workspace.getBoundingClientRect();
+            const availableWidth = bounds.width - splitter.offsetWidth;
+            const minRatio = Math.max(0.2, parseFloat(getComputedStyle(leftPane).minWidth) / availableWidth);
+            const maxRatio = Math.min(0.8, 1 - parseFloat(getComputedStyle(rightPane).minWidth) / availableWidth);
+            const ratio = Math.min(maxRatio, Math.max(minRatio, (clientX - bounds.left) / availableWidth));
+            leftPane.style.flexBasis = `${availableWidth * ratio}px`;
+            rightPane.style.flexBasis = `${availableWidth * (1 - ratio)}px`;
+            splitter.setAttribute('aria-valuemin', String(Math.round(minRatio * 100)));
+            splitter.setAttribute('aria-valuemax', String(Math.round(maxRatio * 100)));
+            splitter.setAttribute('aria-valuenow', String(Math.round(ratio * 100)));
+        }
+
+        splitter.addEventListener('pointerdown', event => {
+            if (workspace.classList.contains('preview-only')) return;
+            splitter.setPointerCapture(event.pointerId);
+            document.body.classList.add('resizing');
+            resizePanels(event.clientX);
+        });
+        splitter.addEventListener('pointermove', event => {
+            if (splitter.hasPointerCapture(event.pointerId)) resizePanels(event.clientX);
+        });
+        function stopResizing(event) {
+            if (splitter.hasPointerCapture(event.pointerId)) splitter.releasePointerCapture(event.pointerId);
+            document.body.classList.remove('resizing');
+        }
+        splitter.addEventListener('pointerup', stopResizing);
+        splitter.addEventListener('pointercancel', stopResizing);
+        splitter.addEventListener('keydown', event => {
+            if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+            event.preventDefault();
+            const bounds = workspace.getBoundingClientRect();
+            const availableWidth = bounds.width - splitter.offsetWidth;
+            const currentRatio = leftPane.getBoundingClientRect().width / availableWidth;
+            const nextRatio = currentRatio + (event.key === 'ArrowRight' ? 0.02 : -0.02);
+            resizePanels(bounds.left + availableWidth * nextRatio);
+        });
 
         // Initialize display on startup
         updateOutput();
-        switchTab('preview');
+        switchTab('preview', document.querySelector('.tab-btn.active'));
     </script>
 </body>
 </html>

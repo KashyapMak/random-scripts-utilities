@@ -1,6 +1,6 @@
-# 🛠️ Random Scripts & Utilities
+# A Utility Hub
 
-Welcome to **random-scripts-utilities**! This is a collection of curated scripts and tools designed for the "little pro" user—the person who knows their way around a computer and wants to automate daily tasks, optimize system performance, and handle technical chores with ease.
+Welcome to **A Utility Hub**, a collection of practical browser tools and scripts for development, planning, file work, and system maintenance.
 
 Whether it's system maintenance, file management, or workflow shortcuts, these utilities are built to be lightweight, transparent, and effective.
 
@@ -29,6 +29,18 @@ Located in the `browser-machine-clean/` directory, this PowerShell script is a s
 | `...` | *More tools coming soon* | *Stay tuned for more "pro" utilities.* |
 
 ---
+
+## Utility Index
+
+The repository root `index.html` lists the available tools using `utilities.json`. Update that JSON file to add or edit a utility. Browser tools use `"type": "browser"` and downloadable scripts use `"type": "download"`; paths are relative to the repository root.
+
+Because the index loads JSON with `fetch`, serve the repository over HTTP instead of opening the page directly as a file:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open `http://localhost:8000/` in your browser.
 
 ## 🛠️ Getting Started
 

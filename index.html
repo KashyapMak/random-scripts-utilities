@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f4f6f2">
+    <title>A Utility Hub | Utility Index</title>
+    <script defer src="./home-link.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: light;
+            --paper: #f4f6f2;
+            --surface: #ffffff;
+            --ink: #172622;
+            --muted: #596761;
+            --line: #d8e0da;
+            --green: #176c55;
+            --green-dark: #105640;
+            --mint: #dcefe4;
+            --lime: #d6ed83;
+            --coral: #cf593d;
+            --mono: "DM Mono", "Courier New", monospace;
+            --sans: "DM Sans", "Segoe UI", sans-serif;
+            --display: "Space Grotesk", "Segoe UI", sans-serif;
+        }
+
+        * { box-sizing: border-box; }
+        body { min-width: 320px; min-height: 100vh; margin: 0; color: var(--ink); background: var(--paper); font-family: var(--sans); }
+        button, input, select { font: inherit; }
+        button, a, select { -webkit-tap-highlight-color: transparent; }
+        a { color: inherit; }
+
+        main { width: min(1240px, calc(100% - 64px)); margin: 0 auto; }
+        .intro { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 40px; align-items: end; padding: 58px 0 42px; border-bottom: 1px solid var(--line); }
+        .eyebrow { display: flex; align-items: center; gap: 9px; margin: 0 0 16px; color: var(--green); font-family: var(--mono); font-size: 11px; text-transform: uppercase; }
+        .eyebrow::before { width: 22px; height: 2px; content: ""; background: var(--coral); }
+        h1 { max-width: 780px; margin: 0; font-family: var(--display); font-size: 48px; line-height: 1.06; font-weight: 600; }
+        .intro-copy { max-width: 650px; margin: 17px 0 0; color: var(--muted); font-size: 16px; line-height: 1.65; }
+        .collection-count { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; padding-bottom: 6px; }
+        .collection-count strong { font-family: var(--display); font-size: 46px; line-height: 1; font-weight: 600; }
+        .collection-count span { color: var(--muted); font-family: var(--mono); font-size: 10px; text-transform: uppercase; }
+
+        .catalog { padding: 25px 0 64px; }
+        .filters { display: grid; grid-template-columns: minmax(220px, 1fr) auto auto; gap: 12px; align-items: center; margin-bottom: 18px; }
+        .search-wrap { position: relative; }
+        .search-icon { position: absolute; top: 50%; left: 14px; color: var(--muted); font-size: 18px; transform: translateY(-52%); pointer-events: none; }
+        .search-input, .category-select { width: 100%; height: 44px; border: 1px solid var(--line); border-radius: 5px; color: var(--ink); background: var(--surface); }
+        .search-input { padding: 0 14px 0 40px; }
+        .category-select { min-width: 164px; padding: 0 36px 0 12px; }
+        .search-input:focus, .category-select:focus { outline: 3px solid rgba(23,108,85,.16); border-color: var(--green); }
+        .type-filter { display: inline-flex; gap: 3px; padding: 3px; border: 1px solid var(--line); border-radius: 5px; background: #e9eee9; }
+        .type-button { min-height: 34px; padding: 0 11px; border: 0; border-radius: 3px; color: var(--muted); background: transparent; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .type-button[aria-pressed="true"] { color: var(--ink); background: var(--surface); box-shadow: 0 1px 3px rgba(23,38,34,.12); }
+
+        .results-line { display: flex; align-items: center; justify-content: space-between; min-height: 32px; margin-bottom: 8px; color: var(--muted); font-family: var(--mono); font-size: 11px; }
+        .results-line strong { color: var(--ink); font-weight: 500; }
+        .utility-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 13px; }
+        .utility-card { min-height: 226px; display: flex; flex-direction: column; padding: 19px 19px 15px; border: 1px solid var(--line); border-radius: 6px; background: var(--surface); transition: border-color .18s ease, transform .18s ease, box-shadow .18s ease; animation: appear .36s both; }
+        .utility-card:hover { border-color: #8db9a2; box-shadow: 0 8px 24px rgba(31,67,51,.08); transform: translateY(-2px); }
+        .card-meta { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 17px; }
+        .category-label, .kind-label { font-family: var(--mono); font-size: 10px; text-transform: uppercase; }
+        .category-label { color: var(--green); }
+        .kind-label { display: inline-flex; align-items: center; gap: 5px; color: #6b7771; }
+        .kind-label::before { width: 6px; height: 6px; border-radius: 50%; content: ""; background: var(--lime); }
+        .kind-label.download::before { background: #f0a18a; }
+        .utility-card h2 { margin: 0; font-family: var(--display); font-size: 19px; line-height: 1.28; font-weight: 600; }
+        .utility-card p { margin: 9px 0 16px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+        .card-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: auto; padding: 0 0 15px; list-style: none; }
+        .card-tags li { padding: 4px 7px; border-radius: 3px; color: #596761; background: #f0f3ef; font-family: var(--mono); font-size: 9px; }
+        .card-action { min-height: 38px; display: flex; align-items: center; justify-content: space-between; padding: 0 11px; border: 1px solid var(--green); border-radius: 4px; color: white; background: var(--green); text-decoration: none; font-size: 12px; font-weight: 700; transition: background .15s ease, border-color .15s ease; }
+        .card-action:hover { border-color: var(--green-dark); background: var(--green-dark); }
+        .card-action span:last-child { font-family: var(--mono); font-size: 15px; }
+        .empty-state { grid-column: 1 / -1; padding: 58px 20px; border: 1px dashed #b8c6bd; border-radius: 6px; text-align: center; }
+        .empty-state h2 { margin: 0 0 7px; font-family: var(--display); font-size: 20px; }
+        .empty-state p { margin: 0; color: var(--muted); font-size: 14px; }
+        .load-error { padding: 22px; border: 1px solid #e7b9aa; border-radius: 5px; color: #7f3224; background: #fff5f0; }
+        .load-error code { font-family: var(--mono); }
+        footer { display: flex; gap: 20px; padding: 18px 0 26px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+        footer a { color: var(--green); font-weight: 700; }
+
+        @keyframes appear { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 900px) {
+            main { width: min(100% - 40px, 760px); }
+            .utility-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .filters { grid-template-columns: minmax(180px, 1fr) auto; }
+            .type-filter { grid-column: 1 / -1; justify-self: start; }
+        }
+        @media (max-width: 600px) {
+            main { width: calc(100% - 32px); }
+            .intro { grid-template-columns: 1fr auto; gap: 14px; padding: 38px 0 28px; }
+            h1 { max-width: 460px; font-size: 36px; }
+            .intro-copy { max-width: 400px; margin-top: 12px; font-size: 14px; }
+            .collection-count strong { font-size: 36px; }
+            .collection-count span { max-width: 72px; text-align: right; line-height: 1.5; }
+            .catalog { padding-top: 18px; }
+            .filters { grid-template-columns: 1fr 1fr; gap: 8px; }
+            .search-wrap { grid-column: 1 / -1; }
+            .category-select { min-width: 0; }
+            .type-filter { grid-column: auto; justify-self: stretch; justify-content: center; }
+            .type-button { flex: 1; padding: 0 6px; }
+            .utility-grid { grid-template-columns: 1fr; gap: 9px; }
+            .utility-card { min-height: 208px; }
+            footer { flex-direction: column; gap: 7px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <section class="intro" aria-labelledby="page-title">
+            <div>
+                <p class="eyebrow">Utility index / <span id="collection-total">Loading</span></p>
+                <h1 id="page-title">Find a tool.<br>Get back to work.</h1>
+                <p class="intro-copy">A practical set of browser tools and small scripts for everyday development, planning, file work, and system chores. Choose a category or search by name.</p>
+            </div>
+            <div class="collection-count" aria-label="Number of utilities">
+                <strong id="count-number">--</strong>
+                <span>tools in the collection</span>
+            </div>
+        </section>
+
+        <section class="catalog" aria-label="Utility catalog">
+            <div class="filters">
+                <label class="search-wrap">
+                    <span class="search-icon" aria-hidden="true">⌕</span>
+                    <input class="search-input" id="search" type="search" placeholder="Search utilities..." autocomplete="off" aria-label="Search utilities">
+                </label>
+                <label>
+                    <span hidden>Filter by category</span>
+                    <select class="category-select" id="category-filter" aria-label="Filter by category">
+                        <option value="all">All categories</option>
+                    </select>
+                </label>
+                <div class="type-filter" role="group" aria-label="Filter by utility type">
+                    <button class="type-button" type="button" data-type="all" aria-pressed="true">All</button>
+                    <button class="type-button" type="button" data-type="browser" aria-pressed="false">Browser</button>
+                    <button class="type-button" type="button" data-type="download" aria-pressed="false">Downloads</button>
+                </div>
+            </div>
+            <div class="results-line" aria-live="polite">
+                <span id="result-count">Loading utilities...</span>
+                <strong id="active-filter-label"></strong>
+            </div>
+            <div class="utility-grid" id="utility-grid" aria-live="polite" aria-busy="true"></div>
+        </section>
+
+        <footer>
+            <span>For more, visit <a href="https://github.com/KashyapMak" target="_blank" rel="noopener noreferrer">github.com/KashyapMak</a>.</span>
+        </footer>
+    </main>
+
+    <script>
+        const utilityGrid = document.getElementById('utility-grid');
+        const searchInput = document.getElementById('search');
+        const categoryFilter = document.getElementById('category-filter');
+        const resultCount = document.getElementById('result-count');
+        const activeFilterLabel = document.getElementById('active-filter-label');
+        const typeButtons = Array.from(document.querySelectorAll('.type-button'));
+        let utilities = [];
+        let selectedType = 'all';
+
+        function makeElement(tag, className, text) {
+            const element = document.createElement(tag);
+            if (className) element.className = className;
+            if (text !== undefined) element.textContent = text;
+            return element;
+        }
+
+        function createCard(utility, index) {
+            const card = makeElement('article', 'utility-card');
+            card.style.animationDelay = `${Math.min(index * 35, 280)}ms`;
+            const isDownload = utility.type === 'download';
+            const isExternal = utility.type === 'external';
+
+            const meta = makeElement('div', 'card-meta');
+            meta.append(makeElement('span', 'category-label', utility.category));
+            const kindLabel = isDownload ? 'Script file' : isExternal ? 'External tool' : 'Browser tool';
+            meta.append(makeElement('span', `kind-label${isDownload ? ' download' : ''}`, kindLabel));
+
+            const title = makeElement('h2', '', utility.name);
+            const description = makeElement('p', '', utility.description);
+            const tags = makeElement('ul', 'card-tags');
+            (utility.tags || []).slice(0, 3).forEach(tag => tags.append(makeElement('li', '', tag)));
+
+            const action = makeElement('a', 'card-action');
+            action.href = utility.path;
+            if (!isDownload) {
+                action.target = '_blank';
+                action.rel = 'noopener noreferrer';
+                action.setAttribute('aria-label', `Open ${utility.name} in a new tab`);
+            } else {
+                action.setAttribute('download', '');
+                action.setAttribute('aria-label', `Download ${utility.name}`);
+            }
+            action.append(makeElement('span', '', isDownload ? 'Download file' : 'Open utility'));
+            action.append(makeElement('span', '', isDownload ? '↓' : '↗'));
+            card.append(meta, title, description, tags, action);
+            return card;
+        }
+
+        function renderUtilities() {
+            const query = searchInput.value.trim().toLowerCase();
+            const category = categoryFilter.value;
+            const filtered = utilities.filter(utility => {
+                const searchable = [utility.name, utility.description, utility.category, ...(utility.tags || [])].join(' ').toLowerCase();
+                const matchesType = selectedType === 'all'
+                    || (selectedType === 'browser' ? utility.type === 'browser' || utility.type === 'external' : utility.type === selectedType);
+                return matchesType
+                    && (category === 'all' || utility.category === category)
+                    && (!query || searchable.includes(query));
+            });
+
+            utilityGrid.replaceChildren();
+            if (filtered.length === 0) {
+                const empty = makeElement('div', 'empty-state');
+                empty.append(makeElement('h2', '', 'No matching utilities'), makeElement('p', '', 'Try another search or clear one of the filters.'));
+                utilityGrid.append(empty);
+            } else {
+                filtered.forEach((utility, index) => utilityGrid.append(createCard(utility, index)));
+            }
+
+            resultCount.textContent = `${filtered.length} ${filtered.length === 1 ? 'utility' : 'utilities'}`;
+            activeFilterLabel.textContent = category === 'all' ? '' : category;
+            utilityGrid.setAttribute('aria-busy', 'false');
+        }
+
+        async function loadUtilities() {
+            try {
+                const response = await fetch('./utilities.json');
+                if (!response.ok) throw new Error(`Request failed (${response.status})`);
+                utilities = await response.json();
+                if (!Array.isArray(utilities)) throw new Error('Catalog data must be a JSON array');
+
+                const categories = [...new Set(utilities.map(utility => utility.category))].sort((a, b) => a.localeCompare(b));
+                categories.forEach(category => categoryFilter.append(new Option(category, category)));
+                document.getElementById('count-number').textContent = String(utilities.length).padStart(2, '0');
+                document.getElementById('collection-total').textContent = `${utilities.length} items`;
+                renderUtilities();
+            } catch (error) {
+                utilityGrid.setAttribute('aria-busy', 'false');
+                resultCount.textContent = 'Catalog unavailable';
+                const message = makeElement('div', 'load-error');
+                message.append(makeElement('strong', '', 'Could not load utilities.json.'));
+                message.append(makeElement('p', '', 'Serve this folder over HTTP instead of opening index.html directly, then reload the page.'));
+                const hint = makeElement('code', '', 'python3 -m http.server 8000');
+                message.append(hint);
+                utilityGrid.append(message);
+                console.error('Unable to load utility catalog:', error);
+            }
+        }
+
+        searchInput.addEventListener('input', renderUtilities);
+        categoryFilter.addEventListener('change', renderUtilities);
+        typeButtons.forEach(button => button.addEventListener('click', () => {
+            selectedType = button.dataset.type;
+            typeButtons.forEach(option => option.setAttribute('aria-pressed', String(option === button)));
+            renderUtilities();
+        }));
+
+        loadUtilities();
+    </script>
+</body>
+</html>

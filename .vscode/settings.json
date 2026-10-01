@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^node -e \"async function check\\(\\)\\{const base='http://127\\.0\\.0\\.1:8000';const paths=\\['home-link\\.js','utilities\\.json','html-development-utilities/unescaper\\.html','html-development-utilities/endcode-decode\\.html','html-development-utilities/ISO-8601-Duration-Generator\\.html','html-development-utilities/base64-to-image\\.html'\\];const results=await Promise\\.all\\(paths\\.map\\(async path=>\\(\\{path,status:\\(await fetch\\(base\\+'/'\\+path\\)\\)\\.status\\}\\)\\)\\);if\\(results\\.some\\(item=>item\\.status!==200\\)\\)\\{console\\.error\\(results\\);process\\.exit\\(1\\)\\}const helper=await\\(await fetch\\(base\\+'/home-link\\.js'\\)\\)\\.text\\(\\);const entries=await\\(await fetch\\(base\\+'/utilities\\.json'\\)\\)\\.json\\(\\);const page=await\\(await fetch\\(base\\+'/html-development-utilities/unescaper\\.html'\\)\\)\\.text\\(\\);if\\(helper\\.includes\\('fetch\\(new URL\\(\\\\'utilities\\.json\\\\', siteRoot\\)\\)'\\)===false\\|\\|entries\\.length!==12\\|\\|page\\.includes\\('grid-template-columns: minmax\\(0, 1fr\\) auto minmax\\(0, 1fr\\)'\\)===false\\)\\{console\\.error\\('Menu data or redesigned page check failed'\\);process\\.exit\\(1\\)\\}console\\.log\\('HTTP/layout check passed for '\\+paths\\.length\\+' resources and '\\+entries\\.length\\+' menu entries'\\)\\};check\\(\\)\\.catch\\(error=>\\{console\\.error\\(error\\);process\\.exit\\(1\\)\\}\\)\" && git diff --check$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
